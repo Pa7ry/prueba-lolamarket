@@ -3,9 +3,9 @@ import { ThemeProvider as EmotionThemeProvider } from 'emotion-theming';
 import { BrowserRouter } from 'react-router-dom';
 import React, { FC } from 'react';
 import { Provider } from 'react-redux';
-import store from './../../redux/store';
 
 import theme from '../../config/theme';
+import store from 'store';
 
 const Providers: FC = ({ children }) => (
     <EmotionThemeProvider theme={theme}>

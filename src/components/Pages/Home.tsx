@@ -1,18 +1,10 @@
 import styled from '@emotion/styled';
 import { Button, TextField } from '@material-ui/core';
-import { PostalCodeResponse, SessionToken } from 'models/main';
-import React, { FC, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-    setDialogStatus,
-    setPostalCode,
-    setPostalCodeShops,
-    setToken,
-} from 'redux/actions';
-import fetcher from './../../config/fetcher';
-import { useHistory } from 'react-router-dom';
 import routes from 'config/routes';
-import { RootState } from 'redux/reducer';
+import React, { FC, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { getMarkets, getToken, setPostalCode } from 'store/AppSlice';
 
 const InputButton = styled.div({
     margin: 15,
@@ -30,36 +22,18 @@ const CustomButton = styled(Button)({
 const Home: FC = () => {
     const history = useHistory();
     const dispatch = useDispatch();
-    const { token } = useSelector((appState: RootState) => appState.data);
 
     const [zip, setZip] = useState<string>('');
 
     const getMarketsByZip = () => {
-        dispatch(setPostalCode(Number(zip)));
-        fetcher<PostalCodeResponse>('/user/postalcode', {
-            token: token,
-            postalcode: Number(zip),
-        }).then((res: PostalCodeResponse) => {
-            switch (res.status) {
-                case 'OK':
-                    dispatch(setPostalCodeShops(res));
-                    return history.push(routes.selectShop);
-                case 'Error':
-                    return dispatch(
-                        setDialogStatus({
-                            show: true,
-                            errorMsg: res.error.message,
-                        })
-                    );
-            }
-        });
+        dispatch(setPostalCode(zip));
+        dispatch(getMarkets());
+        history.push(routes.selectShop);
     };
 
     useEffect(() => {
-        fetcher<SessionToken>('/user/session').then(res =>
-            dispatch(setToken(res.token))
-        );
-    }, []);
+        dispatch(getToken());
+    }, [dispatch]);
 
     return (
         <InputButton>

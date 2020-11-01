@@ -1,5 +1,5 @@
-import Home from 'components/stages/home';
-import SelectShop from 'components/stages/select-shop';
+import Home from 'components/Pages/Home';
+import SelectShop from 'components/Pages/MarketsList';
 // import SelectShop from 'components/stages/select-shop';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';

@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'redux/reducer';
 import {
     Button,
     Dialog,
@@ -9,21 +8,18 @@ import {
     DialogContentText,
     DialogTitle,
 } from '@material-ui/core';
-import { setDialogStatus } from 'redux/actions';
+import { appSelector, setIsDialogOpen } from 'store/AppSlice';
 
-const ErrorDialog: FC = state => {
-    console.log('Error dialog: ', state);
+const ErrorDialog: FC = () => {
     const dispatch = useDispatch();
-    const { isDialogOpen } = useSelector(
-        (appState: RootState) => appState.data
-    );
+    const { isDialogOpen } = useSelector(appSelector);
 
     return (
         <>
             <Dialog
                 open={isDialogOpen.show}
                 onClose={() =>
-                    dispatch(setDialogStatus({ show: false, errorMsg: '' }))
+                    dispatch(setIsDialogOpen({ show: false, errorMsg: '' }))
                 }
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
@@ -38,7 +34,7 @@ const ErrorDialog: FC = state => {
                     <Button
                         onClick={() =>
                             dispatch(
-                                setDialogStatus({ show: false, errorMsg: '' })
+                                setIsDialogOpen({ show: false, errorMsg: '' })
                             )
                         }
                         color="primary"

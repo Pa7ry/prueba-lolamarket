@@ -10,17 +10,14 @@ import {
 } from '@material-ui/core';
 import React, { FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    setDialogStatus,
-    setPostalCode,
-    setPostalCodeShops,
-    setSideBarStatus,
-} from 'redux/actions';
-import { RootState } from 'redux/reducer';
 import styled from '@emotion/styled';
-import fetcher from 'config/fetcher';
-import { PostalCodeResponse } from 'models/main';
 import { Edit } from '@material-ui/icons';
+import {
+    appSelector,
+    getMarkets,
+    setIsSidebarOpen,
+    setPostalCode,
+} from 'store/AppSlice';
 
 const PostalCode = styled.div({
     width: '100%',
@@ -45,26 +42,11 @@ const CustomInputBase = styled(InputBase)({
 
 const AppBar: FC = () => {
     const dispatch = useDispatch();
-    const state = useSelector((appState: RootState) => appState.data);
+    const { markets } = useSelector(appSelector);
 
     const getMarketsByZip = (zip: string) => {
-        dispatch(setPostalCode(Number(zip)));
-        fetcher<PostalCodeResponse>('/user/postalcode', {
-            token: state.token,
-            postalcode: Number(zip),
-        }).then((res: PostalCodeResponse) => {
-            switch (res.status) {
-                case 'OK':
-                    return dispatch(setPostalCodeShops(res));
-                case 'Error':
-                    return dispatch(
-                        setDialogStatus({
-                            show: true,
-                            errorMsg: res.error.message,
-                        })
-                    );
-            }
-        });
+        dispatch(setPostalCode(zip));
+        dispatch(getMarkets());
     };
 
     return (
@@ -72,13 +54,13 @@ const AppBar: FC = () => {
             <MuiAppBar position="static">
                 <Toolbar color="inherit">
                     <Button
-                        onClick={() => dispatch(setSideBarStatus(true))}
+                        onClick={() => dispatch(setIsSidebarOpen(true))}
                         color="inherit"
                     >
                         Menú
                     </Button>
                     <PostalCode>
-                        <div>{state.shops?.city.toUpperCase()}</div>
+                        <div>{markets?.city.toUpperCase()}</div>
                         <InputGroup>
                             <CustomInputBase
                                 placeholder="Search…"

@@ -1,11 +1,13 @@
 import styled from '@emotion/styled';
 import { Card, CardContent, Typography } from '@material-ui/core';
-import fetcher from 'config/fetcher';
-import { CategoriesResponse, Market, Service } from 'models/main';
+import { Market, Service } from 'models/main';
 import React, { FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setMarketCategories, setMarketSelected } from 'redux/actions';
-import { RootState } from 'redux/reducer';
+import {
+    appSelector,
+    getMarketCategories,
+    setMarketSelected,
+} from 'store/AppSlice';
 
 const ImgContainer = styled.div({
     display: 'flex',
@@ -41,35 +43,42 @@ const MarketSelected = styled.div({
 
 const SelectShop: FC = () => {
     const dispatch = useDispatch();
-    const state = useSelector((appState: RootState) => appState.data);
+    const { marketSelected, markets } = useSelector(appSelector);
 
-    const getMarketCategories = (market: Market) => {
-        fetcher<CategoriesResponse>('/company/categories', {
-            token: state.token,
-            company_id: market.id,
-        }).then((res: CategoriesResponse) => {
-            dispatch(setMarketCategories(res));
-            dispatch(setMarketSelected(market));
-        });
+    const showMarketCategories = (event: any, market: Market) => {
+        dispatch(setMarketSelected(market));
+        dispatch(getMarketCategories());
+        const cards = document.getElementsByClassName('MuiCard-root');
+        Array.from(cards).map(
+            (element: any) => (element.style.boxShadow = 'none')
+        );
+        event.currentTarget.style.boxShadow = `0 0 0 2px rgb(${
+            market.color !== '255,255,255' ? market.color : '61,86,186'
+        })`;
     };
 
     return (
         <>
             <MarketSelected>
-                <img src={state?.marketSelected?.logotype} />
+                <img
+                    alt={marketSelected?.name}
+                    src={marketSelected?.logotype}
+                />
                 <Typography variant="h4">
-                    {state?.marketSelected?.description}
+                    {marketSelected?.description}
                 </Typography>
             </MarketSelected>
             <Content>
-                {state.shops?.services.map((services: Service) =>
+                {markets?.services.map((services: Service) =>
                     services.markets.map((market: Market) => (
                         <CustomCard
                             key={market.id}
-                            onClick={() => getMarketCategories(market)}
+                            onClick={event =>
+                                showMarketCategories(event, market)
+                            }
                         >
                             <ImgContainer>
-                                <img src={market.logotype} />
+                                <img alt={market.name} src={market.logotype} />
                             </ImgContainer>
                             <CardContent>
                                 <Typography color="textSecondary">
