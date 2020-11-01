@@ -3,8 +3,8 @@ export interface SessionToken {
     token: string;
 }
 
-export interface PostalCodeResponse {
-    status: string;
+export interface PostalCodeOKResponse {
+    status: 'OK';
     services: Service[];
     extra_services: any[];
     home_needs: any[];
@@ -94,3 +94,20 @@ export interface Category {
     is_final: boolean;
     categories?: any[];
 }
+
+interface PostalCodeKOResponse {
+    status: 'Error';
+    error: Error;
+}
+
+interface Error {
+    code: string;
+    message: string;
+}
+
+export interface ErrorDialogProps {
+    show: boolean;
+    errorMsg: string;
+}
+
+export type PostalCodeResponse = PostalCodeKOResponse | PostalCodeOKResponse;

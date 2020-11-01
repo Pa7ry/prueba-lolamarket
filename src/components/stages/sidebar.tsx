@@ -1,19 +1,23 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
-import { connect } from 'react-redux';
-import { mapStateToProps } from '../../components/common/utils';
-import store from './../../redux/store';
+import { useDispatch, useSelector } from 'react-redux';
 import { setSideBarStatus } from 'redux/actions';
 import { RootState } from 'redux/reducer';
+import {
+    AppBar,
+    Avatar,
+    Collapse,
+    Container,
+    CssBaseline,
+    Toolbar,
+    Typography,
+} from '@material-ui/core';
+import styled from '@emotion/styled';
 
 const useStyles = makeStyles({
     list: {
@@ -24,52 +28,148 @@ const useStyles = makeStyles({
     },
 });
 
-const SideBar: FC<RootState> = state => {
+const CustomAvatar = styled(Avatar)({
+    height: 19.5,
+    width: 19,
+});
+
+const CustomListItemIcon = styled(ListItem)({
+    width: 33,
+    padding: 0,
+});
+
+const CustomList = styled(List)({
+    background: 'aliceblue',
+    margin: '0 -24px',
+    padding: '0 24px',
+});
+
+const SideBarAppBar = styled(AppBar)({
+    width: 298,
+    left: 0,
+    right: 'auto',
+    padding: 0,
+});
+
+const MidiAvatar = styled(Avatar)({
+    height: 24,
+    width: 24,
+    MarginRight: 12,
+});
+
+const Content = styled.div({
+    display: 'flex',
+    flexDirection: 'column',
+    paddingLeft: 12,
+});
+
+const CustomTypography = styled(Typography)({
+    lineHeight: 1,
+});
+
+const SideBar: FC = () => {
+    const dispatch = useDispatch();
+    const state = useSelector((appState: RootState) => appState.data);
     const classes = useStyles();
-    console.log('Side: ', state);
+    const [open, setOpen] = useState<boolean>(false);
+    const [category__, setCategory] = useState<number>(0);
 
     return (
         <div>
             <Drawer
-                open={state.data.isSideBarOpen}
-                onClose={() => store.dispatch(setSideBarStatus(false))}
+                open={state.isSideBarOpen}
+                onClose={() => dispatch(setSideBarStatus(false))}
             >
-                <div className={clsx(classes.list)} role="presentation">
-                    <List>
-                        {['Inbox', 'Starred', 'Send email', 'Drafts'].map(
-                            (text, index) => (
-                                <ListItem button key={text}>
-                                    <ListItemIcon>
-                                        {index % 2 === 0 ? (
-                                            <InboxIcon />
-                                        ) : (
-                                            <MailIcon />
-                                        )}
-                                    </ListItemIcon>
-                                    <ListItemText primary={text} />
-                                </ListItem>
-                            )
-                        )}
-                    </List>
-                    <Divider />
-                    <List>
-                        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-                            <ListItem button key={text}>
-                                <ListItemIcon>
-                                    {index % 2 === 0 ? (
-                                        <InboxIcon />
-                                    ) : (
-                                        <MailIcon />
-                                    )}
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItem>
-                        ))}
-                    </List>
-                </div>
+                <CssBaseline />
+                <SideBarAppBar>
+                    <Toolbar>
+                        <MidiAvatar
+                            alt={state.marketSelected?.name}
+                            src={state.marketSelected?.icon}
+                        />
+                        <Content>
+                            <CustomTypography variant="h6">
+                                {state.marketSelected?.name}
+                            </CustomTypography>
+                            <CustomTypography variant="caption">
+                                Comprando en {state.postalCode}
+                            </CustomTypography>
+                        </Content>
+                    </Toolbar>
+                </SideBarAppBar>
+                <Toolbar />
+                <Container>
+                    <div className={clsx(classes.list)} role="presentation">
+                        <List>
+                            {state.marketCategories?.categories.map(
+                                category => (
+                                    <>
+                                        <ListItem
+                                            button
+                                            key={category.id}
+                                            onClick={() => {
+                                                setOpen(!open);
+                                                setCategory(category.id);
+                                            }}
+                                        >
+                                            <CustomListItemIcon button>
+                                                <CustomAvatar
+                                                    alt={category.name}
+                                                    src={category.icon}
+                                                />
+                                            </CustomListItemIcon>
+                                            <ListItemText
+                                                primary={category.name}
+                                            />
+                                        </ListItem>
+                                        <Collapse
+                                            in={
+                                                open &&
+                                                category.id === category__
+                                                    ? true
+                                                    : false
+                                            }
+                                            timeout="auto"
+                                            unmountOnExit
+                                        >
+                                            <CustomList>
+                                                {category.categories.map(
+                                                    subcategory => (
+                                                        <ListItem
+                                                            button
+                                                            key={subcategory.id}
+                                                        >
+                                                            <CustomListItemIcon
+                                                                button
+                                                            >
+                                                                <CustomAvatar
+                                                                    alt={
+                                                                        subcategory.name
+                                                                    }
+                                                                    src={
+                                                                        subcategory.icon
+                                                                    }
+                                                                />
+                                                            </CustomListItemIcon>
+                                                            <ListItemText
+                                                                primary={
+                                                                    subcategory.name
+                                                                }
+                                                            />
+                                                        </ListItem>
+                                                    )
+                                                )}
+                                            </CustomList>
+                                        </Collapse>
+                                    </>
+                                )
+                            )}
+                        </List>
+                    </div>
+                </Container>
             </Drawer>
         </div>
     );
 };
 
-export default connect(mapStateToProps)(SideBar);
+export default SideBar;

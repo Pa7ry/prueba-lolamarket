@@ -1,21 +1,11 @@
 import styled from '@emotion/styled';
-import {
-    Card,
-    CardContent,
-    IconButton,
-    Input,
-    InputAdornment,
-    InputLabel,
-    Typography,
-} from '@material-ui/core';
-import { Check, Edit } from '@material-ui/icons';
+import { Card, CardContent, Typography } from '@material-ui/core';
 import fetcher from 'config/fetcher';
-import {
-    CategoriesResponse,
-    PostalCodeResponse,
-    SessionToken,
-} from 'models/main';
-import React, { FC, useEffect, useState } from 'react';
+import { CategoriesResponse, Market, Service } from 'models/main';
+import React, { FC } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setMarketCategories, setMarketSelected } from 'redux/actions';
+import { RootState } from 'redux/reducer';
 
 const ImgContainer = styled.div({
     display: 'flex',
@@ -45,88 +35,52 @@ const CustomCard = styled(Card)({
     },
 });
 
-const PostalCode = styled.div({
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-end',
+const MarketSelected = styled.div({
+    height: 150,
 });
 
 const SelectShop: FC = () => {
-    const [shops, setShops] = useState<PostalCodeResponse | undefined>(
-        undefined
-    );
+    const dispatch = useDispatch();
+    const state = useSelector((appState: RootState) => appState.data);
 
-    const [token, setToken] = useState<string>('');
-
-    const [disabled, setDisabled] = useState<boolean>(true);
-
-    const [postalCode, setPostalCode] = useState<string>('28028');
-
-    useEffect(() => {
-        fetcher<SessionToken>('/user/session').then((res: SessionToken) => {
-            setToken(res.token);
-            getMarkets(postalCode, res.token);
-        });
-    }, []);
-
-    const getMarkets = (zip: string, token_?: string) => {
-        setPostalCode(zip);
-        fetcher<PostalCodeResponse>('/user/postalcode', {
-            token: token_ ? token_ : token,
-            postalcode: Number(zip),
-        }).then((res: PostalCodeResponse) => setShops(res));
-    };
-
-    const getMarketCategories = (id: number) => {
+    const getMarketCategories = (market: Market) => {
         fetcher<CategoriesResponse>('/company/categories', {
-            token: token,
-            company_id: id,
-        }).then((res: CategoriesResponse) => console.log(res));
+            token: state.token,
+            company_id: market.id,
+        }).then((res: CategoriesResponse) => {
+            dispatch(setMarketCategories(res));
+            dispatch(setMarketSelected(market));
+        });
     };
 
     return (
-        <Content>
-            <PostalCode>
-                <InputLabel htmlFor="postal-code">Código postal</InputLabel>
-                <Input
-                    id="postal-code"
-                    defaultValue={postalCode}
-                    disabled={disabled}
-                    onChange={event =>
-                        event.target.value.length === 5 &&
-                        getMarkets(event.target.value)
-                    }
-                    endAdornment={
-                        <InputAdornment position="end">
-                            <IconButton
-                                aria-label="toggle edit postal code"
-                                onClick={() => setDisabled(!disabled)}
-                            >
-                                {disabled ? <Edit /> : <Check />}
-                            </IconButton>
-                        </InputAdornment>
-                    }
-                />
-            </PostalCode>
-            {shops?.services.map(services =>
-                services.markets.map(market => (
-                    <CustomCard
-                        key={market.id}
-                        onClick={() => getMarketCategories(market.id)}
-                    >
-                        <ImgContainer>
-                            <img src={market.logotype} />
-                        </ImgContainer>
-                        <CardContent>
-                            <Typography color="textSecondary">
-                                {services.delivery}
-                            </Typography>
-                        </CardContent>
-                    </CustomCard>
-                ))
-            )}
-        </Content>
+        <>
+            <MarketSelected>
+                <img src={state?.marketSelected?.logotype} />
+                <Typography variant="h4">
+                    {state?.marketSelected?.description}
+                </Typography>
+            </MarketSelected>
+            <Content>
+                {state.shops?.services.map((services: Service) =>
+                    services.markets.map((market: Market) => (
+                        <CustomCard
+                            key={market.id}
+                            onClick={() => getMarketCategories(market)}
+                        >
+                            <ImgContainer>
+                                <img src={market.logotype} />
+                            </ImgContainer>
+                            <CardContent>
+                                <Typography color="textSecondary">
+                                    {services.delivery}
+                                </Typography>
+                            </CardContent>
+                        </CustomCard>
+                    ))
+                )}
+            </Content>
+        </>
     );
 };
 

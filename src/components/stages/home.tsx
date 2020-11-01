@@ -1,13 +1,18 @@
 import styled from '@emotion/styled';
 import { Button, TextField } from '@material-ui/core';
-import { mapStateToProps } from 'components/common/utils';
 import { PostalCodeResponse, SessionToken } from 'models/main';
 import React, { FC, useEffect, useState } from 'react';
-import { connect } from 'react-redux';
-import { setPostalCode, setToken } from 'redux/actions';
-import { RootState } from 'redux/reducer';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+    setDialogStatus,
+    setPostalCode,
+    setPostalCodeShops,
+    setToken,
+} from 'redux/actions';
 import fetcher from './../../config/fetcher';
-import store from './../../redux/store';
+import { useHistory } from 'react-router-dom';
+import routes from 'config/routes';
+import { RootState } from 'redux/reducer';
 
 const InputButton = styled.div({
     margin: 15,
@@ -22,20 +27,37 @@ const CustomButton = styled(Button)({
     height: 48,
 });
 
-const Home: FC<RootState> = state => {
+const Home: FC = () => {
+    const history = useHistory();
+    const dispatch = useDispatch();
+    const { token } = useSelector((appState: RootState) => appState.data);
+
     const [zip, setZip] = useState<string>('');
 
     const getMarketsByZip = () => {
-        store.dispatch(setPostalCode(Number(zip)));
+        dispatch(setPostalCode(Number(zip)));
         fetcher<PostalCodeResponse>('/user/postalcode', {
-            token: state.data.token,
-            postalcode: zip,
-        }).then(res => console.log(res));
+            token: token,
+            postalcode: Number(zip),
+        }).then((res: PostalCodeResponse) => {
+            switch (res.status) {
+                case 'OK':
+                    dispatch(setPostalCodeShops(res));
+                    return history.push(routes.selectShop);
+                case 'Error':
+                    return dispatch(
+                        setDialogStatus({
+                            show: true,
+                            errorMsg: res.error.message,
+                        })
+                    );
+            }
+        });
     };
 
     useEffect(() => {
         fetcher<SessionToken>('/user/session').then(res =>
-            store.dispatch(setToken(res.token))
+            dispatch(setToken(res.token))
         );
     }, []);
 
@@ -61,4 +83,4 @@ const Home: FC<RootState> = state => {
     );
 };
 
-export default connect(mapStateToProps)(Home);
+export default Home;

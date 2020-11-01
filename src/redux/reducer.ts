@@ -3,14 +3,22 @@ import {
     AppTypes,
     GenericActionTypes,
     SET_POSTALCODE,
+    SET_POSTALCODESHOPS,
     SET_SIDEBARSTATUS,
     SET_TOKEN,
+    SET_DIALOGSTATUS,
+    SET_MARKETCATEGORIES,
+    SET_MARKETSELECTED,
 } from './types';
 
 const initialState: AppTypes = {
     postalCode: undefined,
     token: undefined,
     isSideBarOpen: false,
+    shops: undefined,
+    isDialogOpen: { show: false, errorMsg: '' },
+    marketCategories: undefined,
+    marketSelected: undefined,
 };
 
 const postsReducer = (
@@ -32,6 +40,26 @@ const postsReducer = (
             return {
                 ...state,
                 isSideBarOpen: action.payload.isSideBarOpen,
+            };
+        case SET_POSTALCODESHOPS:
+            return {
+                ...state,
+                shops: action.payload.shops,
+            };
+        case SET_DIALOGSTATUS:
+            return {
+                ...state,
+                isDialogOpen: action.payload.isDialogOpen,
+            };
+        case SET_MARKETCATEGORIES:
+            return {
+                ...state,
+                marketCategories: action.payload.marketCategories,
+            };
+        case SET_MARKETSELECTED:
+            return {
+                ...state,
+                marketSelected: action.payload.marketSelected,
             };
         default:
             return state;
