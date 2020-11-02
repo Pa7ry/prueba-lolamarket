@@ -3,7 +3,14 @@ import { ThunkAction } from 'redux-thunk';
 import { AppState } from './AppSlice';
 import appSliceReducer from './AppSlice';
 
-export type AppThunk = ThunkAction<void, AppState, unknown, Action<string>>;
+export type AppThunk = ThunkAction<
+    void,
+    {
+        appState: AppState;
+    },
+    unknown,
+    Action<string>
+>;
 // TODO cambiar el any
 const store: any = configureStore({
     reducer: {

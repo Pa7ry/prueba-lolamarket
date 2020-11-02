@@ -8,18 +8,22 @@ import {
     DialogContentText,
     DialogTitle,
 } from '@material-ui/core';
-import { appSelector, setIsDialogOpen } from 'store/AppSlice';
+import { appSelector, setData } from 'store/AppSlice';
 
 const ErrorDialog: FC = () => {
     const dispatch = useDispatch();
-    const { isDialogOpen } = useSelector(appSelector);
+    const { data } = useSelector(appSelector);
 
     return (
         <>
             <Dialog
-                open={isDialogOpen.show}
+                open={data.isDialogOpen.show}
                 onClose={() =>
-                    dispatch(setIsDialogOpen({ show: false, errorMsg: '' }))
+                    dispatch(
+                        setData({
+                            isDialogOpen: { show: false, errorMsg: '' },
+                        })
+                    )
                 }
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
@@ -27,14 +31,16 @@ const ErrorDialog: FC = () => {
                 <DialogTitle id="alert-dialog-title">LO SENTIMOS</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        {isDialogOpen.errorMsg}
+                        {data.isDialogOpen.errorMsg}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button
                         onClick={() =>
                             dispatch(
-                                setIsDialogOpen({ show: false, errorMsg: '' })
+                                setData({
+                                    isDialogOpen: { show: false, errorMsg: '' },
+                                })
                             )
                         }
                         color="primary"

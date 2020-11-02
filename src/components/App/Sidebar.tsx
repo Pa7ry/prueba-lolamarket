@@ -10,13 +10,18 @@ import {
     AppBar,
     Avatar,
     Collapse,
-    Container,
     CssBaseline,
     Toolbar,
     Typography,
 } from '@material-ui/core';
 import styled from '@emotion/styled';
-import { appSelector, setIsSidebarOpen } from 'store/AppSlice';
+import {
+    appSelector,
+    getCategoryProducts,
+    getProducts,
+    setData,
+} from 'store/AppSlice';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles({
     list: {
@@ -43,13 +48,6 @@ const CustomList = styled(List)({
     padding: '0 24px',
 });
 
-const SideBarAppBar = styled(AppBar)({
-    width: 298,
-    left: 0,
-    right: 'auto',
-    padding: 0,
-});
-
 const MidiAvatar = styled(Avatar)({
     height: 24,
     width: 24,
@@ -67,107 +65,158 @@ const CustomTypography = styled(Typography)({
 });
 
 const SideBar: FC = () => {
+    const history = useHistory();
     const dispatch = useDispatch();
-    const {
-        isSideBarOpen,
-        postalCode,
-        marketSelected,
-        marketCategories,
-    } = useSelector(appSelector);
+    const { data } = useSelector(appSelector);
     const classes = useStyles();
     const [open, setOpen] = useState<boolean>(false);
     const [category__, setCategory] = useState<number>(0);
 
+    const SideBarAppBar = styled(AppBar)({
+        width: 298,
+        left: 0,
+        right: 'auto',
+        padding: 0,
+        backgroundColor: `rgb(${data.marketSelected?.color})`,
+    });
+
+    const showProducts = (
+        category_name: string,
+        subcategory_name: string,
+        subcategory_id: number
+    ) => {
+        if (subcategory_name) {
+            dispatch(getProducts(subcategory_id));
+            history.push(
+                `/tienda/${data.marketSelected?.shortcut}/${category_name}/${subcategory_name}`
+            );
+        } else {
+            dispatch(getCategoryProducts(category__));
+            history.push(
+                `/tienda/${data.marketSelected?.shortcut}/${category_name}`
+            );
+        }
+
+        dispatch(
+            setData({
+                isSideBarOpen: false,
+            })
+        );
+    };
+
     return (
-        <div>
+        <>
             <Drawer
-                open={isSideBarOpen}
-                onClose={() => dispatch(setIsSidebarOpen(false))}
+                open={data.isSideBarOpen}
+                onClose={() =>
+                    dispatch(
+                        setData({
+                            isSideBarOpen: false,
+                        })
+                    )
+                }
             >
                 <CssBaseline />
                 <SideBarAppBar>
                     <Toolbar>
                         <MidiAvatar
-                            alt={marketSelected?.name}
-                            src={marketSelected?.icon}
+                            alt={data.marketSelected?.name}
+                            src={data.marketSelected?.icon}
                         />
                         <Content>
                             <CustomTypography variant="h6">
-                                {marketSelected?.name}
+                                {data.marketSelected?.name}
                             </CustomTypography>
                             <CustomTypography variant="caption">
-                                Comprando en {postalCode}
+                                Comprando en {data.postalCode}
                             </CustomTypography>
                         </Content>
                     </Toolbar>
                 </SideBarAppBar>
                 <Toolbar />
-                <Container>
-                    <div className={clsx(classes.list)} role="presentation">
-                        <List>
-                            {marketCategories?.categories.map(category => (
-                                <>
-                                    <ListItem
-                                        button
-                                        key={category.id}
-                                        onClick={() => {
-                                            setOpen(!open);
-                                            setCategory(category.id);
-                                        }}
-                                    >
-                                        <CustomListItemIcon button>
-                                            <CustomAvatar
-                                                alt={category.name}
-                                                src={category.icon}
+                <div className={clsx(classes.list)} role="presentation">
+                    <List>
+                        {data.marketCategories?.categories.map(category => (
+                            <>
+                                <ListItem
+                                    button
+                                    key={category.id}
+                                    onClick={() => {
+                                        setOpen(!open);
+                                        setCategory(category.id);
+                                    }}
+                                >
+                                    <CustomListItemIcon button>
+                                        <CustomAvatar
+                                            alt={category.name}
+                                            src={category.icon}
+                                        />
+                                    </CustomListItemIcon>
+                                    <ListItemText primary={category.name} />
+                                </ListItem>
+                                <Collapse
+                                    in={
+                                        open && category.id === category__
+                                            ? true
+                                            : false
+                                    }
+                                    timeout="auto"
+                                    unmountOnExit
+                                >
+                                    <CustomList>
+                                        <ListItem
+                                            button
+                                            onClick={() =>
+                                                showProducts(
+                                                    category.shortcut,
+                                                    '',
+                                                    category.id
+                                                )
+                                            }
+                                        >
+                                            <ListItemText
+                                                primary={'Ver toda la sección'}
                                             />
-                                        </CustomListItemIcon>
-                                        <ListItemText primary={category.name} />
-                                    </ListItem>
-                                    <Collapse
-                                        in={
-                                            open && category.id === category__
-                                                ? true
-                                                : false
-                                        }
-                                        timeout="auto"
-                                        unmountOnExit
-                                    >
-                                        <CustomList>
-                                            {category.categories.map(
-                                                subcategory => (
-                                                    <ListItem
-                                                        button
-                                                        key={subcategory.id}
-                                                    >
-                                                        <CustomListItemIcon
-                                                            button
-                                                        >
-                                                            <CustomAvatar
-                                                                alt={
-                                                                    subcategory.name
-                                                                }
-                                                                src={
-                                                                    subcategory.icon
-                                                                }
-                                                            />
-                                                        </CustomListItemIcon>
-                                                        <ListItemText
-                                                            primary={
+                                        </ListItem>
+                                        {category.categories.map(
+                                            subcategory => (
+                                                <ListItem
+                                                    button
+                                                    key={subcategory.id}
+                                                    onClick={() =>
+                                                        showProducts(
+                                                            category.shortcut,
+                                                            subcategory.shortcut,
+                                                            subcategory.id
+                                                        )
+                                                    }
+                                                >
+                                                    <CustomListItemIcon button>
+                                                        <CustomAvatar
+                                                            alt={
                                                                 subcategory.name
                                                             }
+                                                            src={
+                                                                subcategory.icon
+                                                            }
                                                         />
-                                                    </ListItem>
-                                                )
-                                            )}
-                                        </CustomList>
-                                    </Collapse>
-                                </>
-                            ))}
-                        </List>
-                    </div>
-                </Container>
+                                                    </CustomListItemIcon>
+                                                    <ListItemText
+                                                        primary={
+                                                            subcategory.name
+                                                        }
+                                                    />
+                                                </ListItem>
+                                            )
+                                        )}
+                                    </CustomList>
+                                </Collapse>
+                            </>
+                        ))}
+                    </List>
+                </div>
             </Drawer>
-        </div>
+        </>
     );
 };
 

@@ -9,8 +9,8 @@ import store from 'store';
 
 const Providers: FC = ({ children }) => (
     <EmotionThemeProvider theme={theme}>
-        <CssBaseline />
         <MuiThemeProvider theme={theme}>
+            <CssBaseline />
             <Provider store={store}>
                 <BrowserRouter>{children}</BrowserRouter>
             </Provider>

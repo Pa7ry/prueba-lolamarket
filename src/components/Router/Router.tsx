@@ -1,6 +1,7 @@
 import Home from 'components/Pages/Home';
-import SelectShop from 'components/Pages/MarketsList';
-// import SelectShop from 'components/stages/select-shop';
+import MarketList from 'components/Pages/MarketsList';
+import ProductList from 'components/Pages/ProductsList';
+import CategoryProductsList from 'components/Pages/CategoryProductsList';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
@@ -11,8 +12,17 @@ const Router = (): JSX.Element => (
         <Route exact path={routes.home}>
             <Home />
         </Route>
-        <Route exact path={routes.selectShop}>
-            <SelectShop />
+        <Route exact path={routes.marketList}>
+            <MarketList />
+        </Route>
+        <Route exact path={routes.marketId}>
+            <MarketList />
+        </Route>
+        <Route exact path={routes.productList}>
+            <ProductList />
+        </Route>
+        <Route exact path={routes.categoryProductList}>
+            <CategoryProductsList />
         </Route>
         <Redirect to={routes.home} />
     </Switch>

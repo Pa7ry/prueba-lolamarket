@@ -1,13 +1,21 @@
 import styled from '@emotion/styled';
-import { Card, CardContent, Typography } from '@material-ui/core';
+import {
+    Card,
+    CardContent,
+    CircularProgress,
+    Grid,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    Typography,
+} from '@material-ui/core';
+import { FavoriteBorder } from '@material-ui/icons';
 import { Market, Service } from 'models/main';
 import React, { FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    appSelector,
-    getMarketCategories,
-    setMarketSelected,
-} from 'store/AppSlice';
+import { useHistory } from 'react-router-dom';
+import { appSelector, getMarketCategories, setData } from 'store/AppSlice';
 
 const ImgContainer = styled.div({
     display: 'flex',
@@ -16,19 +24,16 @@ const ImgContainer = styled.div({
     padding: 18,
 });
 
-const Content = styled.div({
-    display: 'flex',
-    flexFlow: 'row wrap',
-    padding: 30,
-});
-
 const CustomCard = styled(Card)({
-    width: 150,
-    minHeight: 150,
+    width: '100%',
+    minHeight: '100%',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-end',
-    margin: '0 10px 10px 0',
+    alignItems: 'center',
+});
+
+const CustomGrid = styled(Grid)({
     '&:hover': {
         boxShadow: '0 1px 8px #b5b5b5',
     },
@@ -37,19 +42,25 @@ const CustomCard = styled(Card)({
     },
 });
 
-const MarketSelected = styled.div({
-    height: 150,
+const Container = styled.div({
+    padding: '25px 50px',
 });
 
-const SelectShop: FC = () => {
+const MarketList: FC = () => {
     const dispatch = useDispatch();
-    const { marketSelected, markets } = useSelector(appSelector);
+    const history = useHistory();
+    const { data } = useSelector(appSelector);
 
     const showMarketCategories = (event: any, market: Market) => {
-        dispatch(setMarketSelected(market));
+        dispatch(
+            setData({
+                marketSelected: market,
+            })
+        );
         dispatch(getMarketCategories());
+        history.push(`/tienda/${market.shortcut}`);
         const cards = document.getElementsByClassName('MuiCard-root');
-        Array.from(cards).map(
+        Array.from(cards).forEach(
             (element: any) => (element.style.boxShadow = 'none')
         );
         event.currentTarget.style.boxShadow = `0 0 0 2px rgb(${
@@ -57,40 +68,61 @@ const SelectShop: FC = () => {
         })`;
     };
 
-    return (
-        <>
-            <MarketSelected>
-                <img
-                    alt={marketSelected?.name}
-                    src={marketSelected?.logotype}
-                />
-                <Typography variant="h4">
-                    {marketSelected?.description}
-                </Typography>
-            </MarketSelected>
-            <Content>
-                {markets?.services.map((services: Service) =>
+    return data.markets?.status === 'OK' ? (
+        <Container>
+            <Grid container>
+                <Grid item md={12}>
+                    <Typography variant="h4">Tú eliges:</Typography>
+                </Grid>
+                {data.markets?.services.map((services: Service) => (
+                    <Grid item md={6}>
+                        <Typography variant="h5">{services.title}</Typography>
+                        <List dense={true}>
+                            {services.features.map((feature: string) => (
+                                <ListItem>
+                                    <ListItemIcon>
+                                        <FavoriteBorder />
+                                    </ListItemIcon>
+                                    <ListItemText>{feature}</ListItemText>
+                                </ListItem>
+                            ))}
+                        </List>
+                    </Grid>
+                ))}
+            </Grid>
+            <Grid container spacing={3}>
+                {data.markets?.services.map((services: Service) =>
                     services.markets.map((market: Market) => (
-                        <CustomCard
-                            key={market.id}
-                            onClick={event =>
-                                showMarketCategories(event, market)
-                            }
-                        >
-                            <ImgContainer>
-                                <img alt={market.name} src={market.logotype} />
-                            </ImgContainer>
-                            <CardContent>
-                                <Typography color="textSecondary">
-                                    {services.delivery}
-                                </Typography>
-                            </CardContent>
-                        </CustomCard>
+                        <CustomGrid container item md={2} xs={1}>
+                            <CustomCard
+                                key={market.id}
+                                onClick={event => {
+                                    showMarketCategories(event, market);
+                                }}
+                            >
+                                <ImgContainer>
+                                    <img
+                                        alt={market.name}
+                                        src={market.logotype}
+                                    />
+                                </ImgContainer>
+                                <CardContent>
+                                    <Typography color="textSecondary">
+                                        {services.delivery}
+                                    </Typography>
+                                </CardContent>
+                            </CustomCard>
+                        </CustomGrid>
                     ))
                 )}
-            </Content>
-        </>
+            </Grid>
+        </Container>
+    ) : (
+        <h2>
+            <CircularProgress color="secondary" />
+            Cargando
+        </h2>
     );
 };
 
-export default SelectShop;
+export default MarketList;
