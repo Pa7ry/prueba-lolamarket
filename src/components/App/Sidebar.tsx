@@ -1,6 +1,4 @@
 import React, { FC, useState } from 'react';
-import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -9,8 +7,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     AppBar,
     Avatar,
+    Button,
     Collapse,
-    CssBaseline,
+    Divider,
     Toolbar,
     Typography,
 } from '@material-ui/core';
@@ -22,36 +21,20 @@ import {
     setData,
 } from 'store/AppSlice';
 import { useHistory } from 'react-router-dom';
-
-const useStyles = makeStyles({
-    list: {
-        width: 250,
-    },
-    fullList: {
-        width: 'auto',
-    },
-});
-
-const CustomAvatar = styled(Avatar)({
-    height: 19.5,
-    width: 19,
-});
-
-const CustomListItemIcon = styled(ListItem)({
-    width: 33,
-    padding: 0,
-});
+import { Check, ExpandLess } from '@material-ui/icons';
+import routes from 'config/routes';
 
 const CustomList = styled(List)({
-    background: 'aliceblue',
-    margin: '0 -24px',
-    padding: '0 24px',
+    background: '#f5f5f5',
 });
 
-const MidiAvatar = styled(Avatar)({
-    height: 24,
-    width: 24,
-    MarginRight: 12,
+const CustomListItem = styled(ListItem)({
+    '&:hover': {
+        background: '#f5f5f5',
+    },
+    '&:active': {
+        background: '#4fd0531a',
+    },
 });
 
 const Content = styled.div({
@@ -62,23 +45,16 @@ const Content = styled.div({
 
 const CustomTypography = styled(Typography)({
     lineHeight: 1,
+    paddingLeft: 10,
 });
 
 const SideBar: FC = () => {
     const history = useHistory();
     const dispatch = useDispatch();
     const { data } = useSelector(appSelector);
-    const classes = useStyles();
     const [open, setOpen] = useState<boolean>(false);
     const [category__, setCategory] = useState<number>(0);
-
-    const SideBarAppBar = styled(AppBar)({
-        width: 298,
-        left: 0,
-        right: 'auto',
-        padding: 0,
-        backgroundColor: `rgb(${data.marketSelected?.color})`,
-    });
+    const [subcategory__, setSubcategory] = useState<number>(0);
 
     const showProducts = (
         category_name: string,
@@ -108,6 +84,7 @@ const SideBar: FC = () => {
         <>
             <Drawer
                 open={data.isSideBarOpen}
+                style={{ width: '21.7%' }}
                 onClose={() =>
                     dispatch(
                         setData({
@@ -116,10 +93,15 @@ const SideBar: FC = () => {
                     )
                 }
             >
-                <CssBaseline />
-                <SideBarAppBar>
+                <AppBar
+                    position="sticky"
+                    style={{
+                        backgroundColor: `rgb(${data.marketSelected?.color})`,
+                    }}
+                >
                     <Toolbar>
-                        <MidiAvatar
+                        <Avatar
+                            style={{ width: '24px', height: '24px' }}
                             alt={data.marketSelected?.name}
                             src={data.marketSelected?.icon}
                         />
@@ -131,68 +113,101 @@ const SideBar: FC = () => {
                                 Comprando en {data.postalCode}
                             </CustomTypography>
                         </Content>
+                        <Button
+                            onClick={() => {
+                                dispatch(
+                                    setData({
+                                        isSideBarOpen: false,
+                                    })
+                                );
+                                history.push(routes.marketList);
+                            }}
+                        >
+                            Cambiar
+                        </Button>
                     </Toolbar>
-                </SideBarAppBar>
-                <Toolbar />
-                <div className={clsx(classes.list)} role="presentation">
+                </AppBar>
+                <div role="presentation">
                     <List>
                         {data.marketCategories?.categories.map(category => (
                             <>
-                                <ListItem
+                                <CustomListItem
+                                    disableRipple
                                     button
                                     key={category.id}
                                     onClick={() => {
                                         setOpen(!open);
-                                        setCategory(category.id);
+                                        setCategory(
+                                            category__ === category.id
+                                                ? 0
+                                                : category.id
+                                        );
                                     }}
                                 >
-                                    <CustomListItemIcon button>
-                                        <CustomAvatar
-                                            alt={category.name}
-                                            src={category.icon}
-                                        />
-                                    </CustomListItemIcon>
-                                    <ListItemText primary={category.name} />
-                                </ListItem>
+                                    <Avatar
+                                        style={{
+                                            width: '24px',
+                                            height: '24px',
+                                        }}
+                                        alt={category.name}
+                                        src={category.icon}
+                                    />
+                                    <ListItemText
+                                        primary={category.name}
+                                        style={{ padding: '0 7px' }}
+                                    />
+                                    {category.id === category__ && (
+                                        <ExpandLess color="action" />
+                                    )}
+                                </CustomListItem>
+                                <Divider variant="middle" />
                                 <Collapse
-                                    in={
-                                        open && category.id === category__
-                                            ? true
-                                            : false
-                                    }
+                                    in={category.id === category__}
                                     timeout="auto"
                                     unmountOnExit
                                 >
-                                    <CustomList>
+                                    <CustomList disablePadding>
                                         <ListItem
                                             button
-                                            onClick={() =>
+                                            onClick={() => {
                                                 showProducts(
                                                     category.shortcut,
                                                     '',
                                                     category.id
-                                                )
-                                            }
+                                                );
+                                                setSubcategory(category.id);
+                                            }}
                                         >
                                             <ListItemText
                                                 primary={'Ver toda la sección'}
                                             />
+                                            {subcategory__ === category.id && (
+                                                <Check color="action" />
+                                            )}
                                         </ListItem>
+                                        <Divider variant="middle" />
                                         {category.categories.map(
                                             subcategory => (
-                                                <ListItem
-                                                    button
-                                                    key={subcategory.id}
-                                                    onClick={() =>
-                                                        showProducts(
-                                                            category.shortcut,
-                                                            subcategory.shortcut,
-                                                            subcategory.id
-                                                        )
-                                                    }
-                                                >
-                                                    <CustomListItemIcon button>
-                                                        <CustomAvatar
+                                                <>
+                                                    <ListItem
+                                                        button
+                                                        key={subcategory.id}
+                                                        onClick={() => {
+                                                            showProducts(
+                                                                category.shortcut,
+                                                                subcategory.shortcut,
+                                                                subcategory.id
+                                                            );
+                                                            setSubcategory(
+                                                                subcategory.id
+                                                            );
+                                                        }}
+                                                    >
+                                                        <Avatar
+                                                            style={{
+                                                                width: '24px',
+                                                                height: '24px',
+                                                            }}
                                                             alt={
                                                                 subcategory.name
                                                             }
@@ -200,13 +215,22 @@ const SideBar: FC = () => {
                                                                 subcategory.icon
                                                             }
                                                         />
-                                                    </CustomListItemIcon>
-                                                    <ListItemText
-                                                        primary={
-                                                            subcategory.name
-                                                        }
-                                                    />
-                                                </ListItem>
+                                                        <ListItemText
+                                                            primary={
+                                                                subcategory.name
+                                                            }
+                                                            style={{
+                                                                padding:
+                                                                    '0 7px',
+                                                            }}
+                                                        />
+                                                        {subcategory.id ===
+                                                            subcategory__ && (
+                                                            <Check color="action" />
+                                                        )}
+                                                    </ListItem>
+                                                    <Divider variant="middle" />
+                                                </>
                                             )
                                         )}
                                     </CustomList>

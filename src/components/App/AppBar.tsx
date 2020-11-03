@@ -20,7 +20,7 @@ const AppBar: FC = () => {
 
     return (
         <>
-            <CustomMuiAppBar position="static">
+            <CustomMuiAppBar position="sticky">
                 <Toolbar color="inherit">
                     {data.marketSelected && (
                         <Button
