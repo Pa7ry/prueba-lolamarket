@@ -3,25 +3,45 @@ import {
     AppBar as MuiAppBar,
     Avatar,
     Button,
+    Input,
+    InputLabel,
     Toolbar,
     Typography,
 } from '@material-ui/core';
 import React, { FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { appSelector, setData } from 'store/AppSlice';
+import { appSelector, getMarkets, setData } from 'store/AppSlice';
+
+const CustomToolbar = styled(Toolbar)({
+    display: 'flex',
+    justifyContent: 'space-between',
+});
 
 const AppBar: FC = () => {
     const dispatch = useDispatch();
     const { data } = useSelector(appSelector);
 
-    const CustomMuiAppBar = styled(MuiAppBar)({
-        backgroundColor: `rgb(${data.marketSelected?.color})`,
-    });
+    const changePostalCode = (value: string) => {
+        console.log(data.postalCode);
+        dispatch(setData({ postalCode: value }));
+        dispatch(getMarkets());
+    };
+
+    const setInputColor = () => {
+        const res =
+            data.marketSelected?.color !== '255,255,255'
+                ? { color: 'white' }
+                : { color: 'black' };
+        return res;
+    };
 
     return (
-        <>
-            <CustomMuiAppBar position="sticky">
-                <Toolbar color="inherit">
+        <MuiAppBar
+            position="sticky"
+            style={{ background: `rgb(${data.marketSelected?.color})` }}
+        >
+            <CustomToolbar color="inherit">
+                <div>
                     {data.marketSelected && (
                         <Button
                             variant="contained"
@@ -43,9 +63,31 @@ const AppBar: FC = () => {
                             <Typography variant="h6">CATEGORÍAS</Typography>
                         </Button>
                     )}
-                </Toolbar>
-            </CustomMuiAppBar>
-        </>
+                </div>
+                {data.postalCode && (
+                    <div>
+                        <InputLabel
+                            style={setInputColor()}
+                            htmlFor="edit-postalCode"
+                        >
+                            {data.markets?.city.toUpperCase()}
+                        </InputLabel>
+                        <Input
+                            color="secondary"
+                            style={setInputColor()}
+                            id="edit-postalCode"
+                            defaultValue={data.postalCode}
+                            required
+                            inputProps={{ minlength: 5 }}
+                            onChange={event =>
+                                event.target.checkValidity() &&
+                                changePostalCode(event.target.value)
+                            }
+                        />
+                    </div>
+                )}
+            </CustomToolbar>
+        </MuiAppBar>
     );
 };
 
