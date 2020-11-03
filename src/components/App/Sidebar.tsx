@@ -40,7 +40,7 @@ const CustomListItem = styled(ListItem)({
 const Content = styled.div({
     display: 'flex',
     flexDirection: 'column',
-    paddingLeft: 12,
+    padding: '0 8px 0 4px',
 });
 
 const CustomTypography = styled(Typography)({
@@ -114,6 +114,7 @@ const SideBar: FC = () => {
                             </CustomTypography>
                         </Content>
                         <Button
+                            style={{ color: 'white' }}
                             onClick={() => {
                                 dispatch(
                                     setData({
