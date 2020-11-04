@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { CircularProgress, Grid, Typography } from '@material-ui/core';
+import { Avatar, CircularProgress, Grid, Typography } from '@material-ui/core';
 import { Item } from 'models/main';
 import React, { FC } from 'react';
 import { useSelector } from 'react-redux';
@@ -19,9 +19,9 @@ const CustomGrid = styled(Grid)({
     },
 });
 
-const MarketSelected = styled.div({
-    height: 150,
-});
+// const MarketSelected = styled.div({
+//     height: 150,
+// });
 
 const Container = styled.div({
     padding: 50,
@@ -32,15 +32,22 @@ const ProductList: FC = () => {
 
     return data.products?.status === 'OK' ? (
         <Container>
-            <MarketSelected>
-                <img
-                    alt={data.marketSelected?.name}
-                    src={data.marketSelected?.logotype}
-                />
-                <Typography variant="h4">
-                    {data.marketSelected?.description}
+            <Grid
+                container
+                alignItems="center"
+                style={{ padding: '50px 0 30px' }}
+            >
+                <Avatar src={data.products.items[0].parent_category.icon} />
+                <Typography
+                    variant="h6"
+                    style={{
+                        width: '90%',
+                        borderBottom: '1px solid #6ad76e',
+                    }}
+                >
+                    {data.products.items[0].parent_category.name}
                 </Typography>
-            </MarketSelected>
+            </Grid>
             <Grid container spacing={3}>
                 {data?.products?.items.map((product: Item) => (
                     <CustomGrid

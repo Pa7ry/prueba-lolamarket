@@ -93,7 +93,7 @@ const MarketList: FC = () => {
             <Grid container spacing={3}>
                 {data.markets?.services.map((services: Service) =>
                     services.markets.map((market: Market) => (
-                        <CustomGrid container item md={2} xs={1}>
+                        <CustomGrid container item md={2} sm={6} xs={12}>
                             <CustomCard
                                 key={market.id}
                                 onClick={event => {

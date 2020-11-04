@@ -1,26 +1,26 @@
 import styled from '@emotion/styled';
-import { CircularProgress, Grid, Typography } from '@material-ui/core';
+import {
+    Avatar,
+    Card,
+    CardActionArea,
+    CardContent,
+    CardMedia,
+    CircularProgress,
+    Grid,
+    Typography,
+} from '@material-ui/core';
 import { Category3, Item2 } from 'models/main';
 import React, { FC } from 'react';
 import { useSelector } from 'react-redux';
 import { appSelector } from 'store/AppSlice';
 
-const Img = styled.img({
-    maxHeight: 140,
-    maxWidth: 140,
-});
-
-const CustomGrid = styled(Grid)({
-    '&:hover': {
-        boxShadow: '0 1px 8px #b5b5b5',
-    },
-    '&:active': {
-        boxShadow: 'inset 0 0 12px #b5b5b5',
-    },
+const CustomCard = styled(Card)({
+    width: '100%',
+    padding: 15,
 });
 
 const Container = styled.div({
-    padding: 50,
+    padding: '50px',
 });
 
 const CategoryProductsList: FC = () => {
@@ -30,29 +30,60 @@ const CategoryProductsList: FC = () => {
         <Container>
             {data?.categoryProducts?.categories.map((category: Category3) => (
                 <>
-                    <Typography variant="h6">{category.name}</Typography>
-                    <Grid container spacing={3}>
+                    <Grid
+                        container
+                        alignItems="center"
+                        style={{ padding: '50px 0 30px' }}
+                    >
+                        <Avatar src={category.icon} />
+                        <Typography
+                            variant="h6"
+                            style={{
+                                width: '95%',
+                                borderBottom: '1px solid #6ad76e',
+                            }}
+                        >
+                            {category.name}
+                        </Typography>
+                    </Grid>
+                    <Grid container spacing={3} style={{ padding: '0 50px' }}>
                         {category?.items.map((item: Item2) => (
-                            <CustomGrid
+                            <Grid
                                 container
                                 item
                                 md={2}
-                                xs={1}
+                                sm={6}
+                                xs={12}
                                 direction="column"
-                                justify="center"
                                 alignItems="center"
                             >
-                                <Img alt={item.name} src={item.picture} />
-                                <Typography color="textSecondary">
-                                    {item.name}
-                                </Typography>
-                                <Typography color="textSecondary">
-                                    {item.price}
-                                </Typography>
-                            </CustomGrid>
+                                <CustomCard>
+                                    <CardActionArea>
+                                        <CardMedia
+                                            style={{
+                                                height: '140px',
+                                                backgroundSize: 'contain',
+                                            }}
+                                            title={item.name}
+                                            image={item.picture}
+                                        />
+                                        <CardContent
+                                            style={{ paddingTop: '30px' }}
+                                        >
+                                            <Typography align="right">
+                                                {item.price} €
+                                            </Typography>
+                                            <div>
+                                                <Typography align="left">
+                                                    {item.name}
+                                                </Typography>
+                                            </div>
+                                        </CardContent>
+                                    </CardActionArea>
+                                </CustomCard>
+                            </Grid>
                         ))}
                     </Grid>
-                    ;
                 </>
             ))}
         </Container>
