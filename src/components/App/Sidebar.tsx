@@ -75,13 +75,15 @@ const SideBar: FC = () => {
         subcategory_id: number
     ) => {
         if (subcategory_name) {
-            Promise.resolve(
-                dispatch(getProducts(subcategory_id))
-            ).then((res: any) =>
-                history.push(
-                    `/tienda/${data.marketSelected?.shortcut}/${category_name}/${subcategory_name}`,
-                    res.payload.products
-                )
+            console.log(dispatch(getProducts(subcategory_id)));
+            Promise.resolve(dispatch(getProducts(subcategory_id))).then(
+                (res: any) => {
+                    console.log(res);
+                    history.push(
+                        `/tienda/${data.marketSelected?.shortcut}/${category_name}/${subcategory_name}`,
+                        res.payload.products
+                    );
+                }
             );
         } else {
             Promise.resolve(
@@ -184,7 +186,10 @@ const SideBar: FC = () => {
                                             <ExpandLess color="action" />
                                         )}
                                     </CustomListItem>
-                                    <Divider variant="middle" />
+                                    <Divider
+                                        variant="middle"
+                                        key={'divider' + category.id}
+                                    />
                                     <Collapse
                                         key={category.id + 1000}
                                         in={category.id === category__}

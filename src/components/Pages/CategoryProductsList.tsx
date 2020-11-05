@@ -54,7 +54,7 @@ const CategoryProductsList: FC = () => {
     const location = useLocation<any>();
     const dispatch = useDispatch();
 
-    const showDetails = (data: any) => {
+    const showDetails = (data: string) => {
         dispatch(
             setData({
                 isDialogOpen: {
@@ -87,7 +87,9 @@ const CategoryProductsList: FC = () => {
                             direction="column"
                             alignItems="center"
                         >
-                            <CustomCard onClick={() => showDetails('hola')}>
+                            <CustomCard
+                                onClick={() => showDetails(item.description)}
+                            >
                                 <CardActionArea>
                                     <CustomCardMedia
                                         title={item.name}

@@ -120,6 +120,8 @@ export const getMarkets = (): AppThunk => {
             dispatch(
                 setData({ isDialogOpen: { show: true, dialogMsg: error } })
             );
+            dispatch(setData({ postalCode: '' }));
+            dispatch(setData({ marketSelected: '' }));
         }
     };
 };

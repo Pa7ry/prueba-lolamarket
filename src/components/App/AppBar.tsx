@@ -81,7 +81,7 @@ const AppBar: FC = () => {
                             id="edit-postalCode"
                             defaultValue={data.postalCode}
                             required
-                            inputProps={{ minLength: 5 }}
+                            inputProps={{ minLength: 5, maxLength: 5 }}
                             onChange={event =>
                                 event.target.checkValidity() &&
                                 changePostalCode(event.target.value)

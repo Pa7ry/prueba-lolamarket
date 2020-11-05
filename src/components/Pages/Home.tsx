@@ -73,6 +73,8 @@ const Home: FC = () => {
                     <TextField
                         id="outlined-basic"
                         label="Código postal"
+                        required
+                        inputProps={{ minLength: 5, maxLength: 5 }}
                         onChange={(
                             event: React.ChangeEvent<HTMLInputElement>
                         ) => setPostalCode(event.target.value)}
