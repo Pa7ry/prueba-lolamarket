@@ -48,6 +48,19 @@ const CustomTypography = styled(Typography)({
     paddingLeft: 10,
 });
 
+const CustomAvatar = styled(Avatar)({
+    height: 24,
+    width: 24,
+});
+
+const CustomDrawer = styled(Drawer)({
+    width: '21.7%',
+});
+
+const CustomListItemText = styled(ListItemText)({
+    padding: '0 7px',
+});
+
 const SideBar: FC = () => {
     const history = useHistory();
     const dispatch = useDispatch();
@@ -62,16 +75,22 @@ const SideBar: FC = () => {
         subcategory_id: number
     ) => {
         if (subcategory_name) {
-            dispatch(getProducts(subcategory_id));
-            history.push(
-                `/tienda/${data.marketSelected?.shortcut}/${category_name}/${subcategory_name}`,
-                data.products
+            Promise.resolve(
+                dispatch(getProducts(subcategory_id))
+            ).then((res: any) =>
+                history.push(
+                    `/tienda/${data.marketSelected?.shortcut}/${category_name}/${subcategory_name}`,
+                    res.payload.products
+                )
             );
         } else {
-            dispatch(getCategoryProducts(category__));
-            history.push(
-                `/tienda/${data.marketSelected?.shortcut}/${category_name}`,
-                data.categoryProducts
+            Promise.resolve(
+                dispatch(getCategoryProducts(category__))
+            ).then((res: any) =>
+                history.push(
+                    `/tienda/${data.marketSelected?.shortcut}/${category_name}`,
+                    res.payload.categoryProducts
+                )
             );
         }
 
@@ -93,9 +112,8 @@ const SideBar: FC = () => {
     return (
         <>
             {data.marketCategories?.status === 'OK' && (
-                <Drawer
+                <CustomDrawer
                     open={data.isSideBarOpen}
-                    style={{ width: '21.7%' }}
                     onClose={() =>
                         dispatch(
                             setData({
@@ -111,8 +129,7 @@ const SideBar: FC = () => {
                         }}
                     >
                         <Toolbar style={setHeaderFontColor()}>
-                            <Avatar
-                                style={{ width: '24px', height: '24px' }}
+                            <CustomAvatar
                                 alt={data.marketSelected?.name}
                                 src={data.marketSelected?.icon}
                             />
@@ -156,17 +173,12 @@ const SideBar: FC = () => {
                                             );
                                         }}
                                     >
-                                        <Avatar
-                                            style={{
-                                                width: '24px',
-                                                height: '24px',
-                                            }}
+                                        <CustomAvatar
                                             alt={category.name}
                                             src={category.icon}
                                         />
-                                        <ListItemText
+                                        <CustomListItemText
                                             primary={category.name}
-                                            style={{ padding: '0 7px' }}
                                         />
                                         {category.id === category__ && (
                                             <ExpandLess color="action" />
@@ -174,6 +186,7 @@ const SideBar: FC = () => {
                                     </CustomListItem>
                                     <Divider variant="middle" />
                                     <Collapse
+                                        key={category.id + 1000}
                                         in={category.id === category__}
                                         timeout="auto"
                                         unmountOnExit
@@ -218,13 +231,7 @@ const SideBar: FC = () => {
                                                                 );
                                                             }}
                                                         >
-                                                            <Avatar
-                                                                style={{
-                                                                    width:
-                                                                        '24px',
-                                                                    height:
-                                                                        '24px',
-                                                                }}
+                                                            <CustomAvatar
                                                                 alt={
                                                                     subcategory.name
                                                                 }
@@ -232,14 +239,10 @@ const SideBar: FC = () => {
                                                                     subcategory.icon
                                                                 }
                                                             />
-                                                            <ListItemText
+                                                            <CustomListItemText
                                                                 primary={
                                                                     subcategory.name
                                                                 }
-                                                                style={{
-                                                                    padding:
-                                                                        '0 7px',
-                                                                }}
                                                             />
                                                             {subcategory.id ===
                                                                 subcategory__ && (
@@ -256,7 +259,7 @@ const SideBar: FC = () => {
                             ))}
                         </List>
                     </div>
-                </Drawer>
+                </CustomDrawer>
             )}
         </>
     );

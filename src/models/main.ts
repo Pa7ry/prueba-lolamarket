@@ -10,12 +10,10 @@ interface ApiErrorStatus {
 }
 
 export type TokenSuccessResponse = ApiSuccessStatus & {
-    // SessionTokenOKResponse
     token: string;
 };
 
 export type CityMarketsModel = ApiSuccessStatus & {
-    // CityMarketsModel
     services: MarketServiceModel[];
     extra_services: any[];
     home_needs: any[];
@@ -58,13 +56,11 @@ interface BaseMarket {
 }
 
 interface Company extends BaseMarket {
-    // Company
     next_timeslot_label: string;
     next_timeslot: string;
 }
 
 export type MarketModel = BaseMarket & {
-    // Market
     companies: Company[];
 };
 
@@ -77,13 +73,11 @@ interface CategoryBaseModel {
     is_final: boolean;
 }
 
-interface Category extends CategoryBaseModel {
-    // Category
+export interface Category extends CategoryBaseModel {
     categories?: any[];
 }
 
 interface Category_B extends CategoryBaseModel {
-    // Category2
     categories: Category[];
 }
 
@@ -93,7 +87,6 @@ export interface Category_C extends CategoryBaseModel {
 }
 
 interface CategoriesSuccessResponse extends ApiSuccessStatus {
-    // CategoriesOKResponse
     categories: Category_B[];
 }
 
@@ -106,9 +99,10 @@ export type ApiErrorResponse = ApiErrorStatus & {
     error: Error;
 };
 
-export interface ErrorDialogProps {
+export interface AppDialogProps {
     show: boolean;
-    errorMsg: string;
+    dialogMsg: string;
+    dialogTitle?: string;
 }
 
 export interface Products extends ApiSuccessStatus {
@@ -161,7 +155,7 @@ export interface App {
     token?: string;
     isSideBarOpen: boolean;
     shops: CityMarketsModel | undefined;
-    isDialogOpen: ErrorDialogProps;
+    isDialogOpen: AppDialogProps;
     marketCategories: CategoriesResponse | undefined;
     marketSelected: MarketModel | undefined;
     categoryProducts: CategoryProductsResponse | undefined;

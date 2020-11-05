@@ -17,6 +17,11 @@ const CustomToolbar = styled(Toolbar)({
     justifyContent: 'space-between',
 });
 
+const MarketAvatar = styled(Avatar)({
+    height: 35,
+    width: 35,
+});
+
 const AppBar: FC = () => {
     const dispatch = useDispatch();
     const { data } = useSelector(appSelector);
@@ -45,8 +50,7 @@ const AppBar: FC = () => {
                         <Button
                             variant="contained"
                             startIcon={
-                                <Avatar
-                                    style={{ height: '35px', width: '35px' }}
+                                <MarketAvatar
                                     alt={data.marketSelected?.name}
                                     src={data.marketSelected?.icon}
                                 />

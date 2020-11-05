@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppThunk } from './';
 import {
     CategoriesResponse,
-    ErrorDialogProps,
+    AppDialogProps,
     MarketModel,
     CityMarketsModel,
     PostalCodeResponse,
@@ -18,7 +18,7 @@ interface AppData {
     token?: string;
     isSideBarOpen: boolean;
     markets?: CityMarketsModel;
-    isDialogOpen: ErrorDialogProps;
+    isDialogOpen: AppDialogProps;
     marketCategories?: CategoriesResponse;
     marketSelected?: MarketModel;
     products?: Products;
@@ -34,7 +34,7 @@ export interface AppState {
 const initialState: AppState = {
     data: {
         isSideBarOpen: false,
-        isDialogOpen: { show: false, errorMsg: '' },
+        isDialogOpen: { show: false, dialogMsg: '' },
     },
     asyncLoading: false,
     asyncError: '',
@@ -80,7 +80,7 @@ export const getToken = (): AppThunk => {
         try {
             const data: SessionTokenResponse = await fetcher('/user/session');
             if (data.status === 'OK') {
-                dispatch(
+                return dispatch(
                     asyncSuccess({
                         token: data.token,
                     })
@@ -91,7 +91,7 @@ export const getToken = (): AppThunk => {
         } catch (error) {
             dispatch(asyncError(error));
             dispatch(
-                setData({ isDialogOpen: { show: true, errorMsg: error } })
+                setData({ isDialogOpen: { show: true, dialogMsg: error } })
             );
         }
     };
@@ -107,7 +107,7 @@ export const getMarkets = (): AppThunk => {
                 postalcode: state.appStore.data.postalCode,
             });
             if (data.status === 'OK') {
-                dispatch(
+                return dispatch(
                     asyncSuccess({
                         markets: data,
                     })
@@ -118,7 +118,7 @@ export const getMarkets = (): AppThunk => {
         } catch (error) {
             dispatch(asyncError(error));
             dispatch(
-                setData({ isDialogOpen: { show: true, errorMsg: error } })
+                setData({ isDialogOpen: { show: true, dialogMsg: error } })
             );
         }
     };
@@ -137,7 +137,7 @@ export const getMarketCategories = (): AppThunk => {
                 }
             );
             if (data.status === 'OK') {
-                dispatch(
+                return dispatch(
                     asyncSuccess({
                         marketCategories: data,
                     })
@@ -148,7 +148,7 @@ export const getMarketCategories = (): AppThunk => {
         } catch (error) {
             dispatch(asyncError(error));
             dispatch(
-                setData({ isDialogOpen: { show: true, errorMsg: error } })
+                setData({ isDialogOpen: { show: true, dialogMsg: error } })
             );
         }
     };
@@ -165,7 +165,7 @@ export const getProducts = (category_id: number): AppThunk => {
                 category_id: category_id,
             });
             if (data.status === 'OK') {
-                dispatch(
+                return dispatch(
                     asyncSuccess({
                         products: data,
                     })
@@ -176,7 +176,7 @@ export const getProducts = (category_id: number): AppThunk => {
         } catch (error) {
             dispatch(asyncError(error));
             dispatch(
-                setData({ isDialogOpen: { show: true, errorMsg: error } })
+                setData({ isDialogOpen: { show: true, dialogMsg: error } })
             );
         }
     };
@@ -193,7 +193,7 @@ export const getCategoryProducts = (category_id: number): AppThunk => {
                 category_id: category_id,
             });
             if (data.status === 'OK') {
-                dispatch(
+                return dispatch(
                     asyncSuccess({
                         categoryProducts: data,
                     })
@@ -204,7 +204,7 @@ export const getCategoryProducts = (category_id: number): AppThunk => {
         } catch (error) {
             dispatch(asyncError(error));
             dispatch(
-                setData({ isDialogOpen: { show: true, errorMsg: error } })
+                setData({ isDialogOpen: { show: true, dialogMsg: error } })
             );
         }
     };

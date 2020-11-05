@@ -9,71 +9,91 @@ import {
     Grid,
     Typography,
 } from '@material-ui/core';
-import { Category_C, Item2 } from 'models/main';
-import React, { FC, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { Category, Item, Category_C, Item2 } from 'models/main';
+import React, { FC } from 'react';
+import { useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
-import { appSelector } from 'store/AppSlice';
+import { setData } from 'store/AppSlice';
+
+const Container = styled.div({
+    padding: '50px',
+});
+
+const CategoryGrid = styled(Grid)({
+    padding: '50px 0 30px',
+});
+
+const CategoryTypography = styled(Typography)({
+    width: '95%',
+    borderBottom: '1px solid #6ad76e',
+});
+
+const ProductsGrid = styled(Grid)({
+    padding: '0 50px',
+});
 
 const CustomCard = styled(Card)({
     width: '100%',
     padding: 15,
 });
 
-const Container = styled.div({
-    padding: '50px',
+const CustomCardMedia = styled(CardMedia)({
+    height: 140,
+    backgroundSize: 'contain',
+});
+
+const CustomCardContent = styled(CardContent)({
+    paddingTop: 30,
+});
+
+const ProgressGrid = styled(Grid)({
+    height: '80vh',
 });
 
 const CategoryProductsList: FC = () => {
-    // type ProductsLocation = {  }
     const location = useLocation<any>();
-    const { data } = useSelector(appSelector);
+    const dispatch = useDispatch();
 
-    useEffect(() => {
-        console.log(location.state);
-    }, [location]);
+    const showDetails = (data: any) => {
+        dispatch(
+            setData({
+                isDialogOpen: {
+                    show: true,
+                    dialogMsg: data,
+                    dialogTitle: 'PRODUCTO',
+                },
+            })
+        );
+    };
 
-    const prodcutView = (category: any, items: Item2[]) => {
+    const prodcutView = (category: Category_C | Category, items: any) => {
         return (
             <>
-                <Grid
-                    container
-                    alignItems="center"
-                    style={{ padding: '50px 0 30px' }}
-                >
+                <CategoryGrid container alignItems="center">
                     <Avatar src={category.icon} />
-                    <Typography
-                        variant="h6"
-                        style={{
-                            width: '95%',
-                            borderBottom: '1px solid #6ad76e',
-                        }}
-                    >
+                    <CategoryTypography variant="h6">
                         {category.name}
-                    </Typography>
-                </Grid>
-                <Grid container spacing={3} style={{ padding: '0 50px' }}>
-                    {items.map((item: Item2) => (
+                    </CategoryTypography>
+                </CategoryGrid>
+                <ProductsGrid container spacing={3}>
+                    {items.map((item: Item2 | Item) => (
                         <Grid
                             container
                             item
-                            md={2}
+                            lg={2}
+                            md={3}
                             sm={6}
                             xs={12}
                             direction="column"
                             alignItems="center"
                         >
-                            <CustomCard>
+                            <CustomCard onClick={() => showDetails('hola')}>
                                 <CardActionArea>
-                                    <CardMedia
-                                        style={{
-                                            height: '140px',
-                                            backgroundSize: 'contain',
-                                        }}
+                                    <CustomCardMedia
                                         title={item.name}
                                         image={item.picture}
                                     />
-                                    <CardContent style={{ paddingTop: '30px' }}>
+                                    <CustomCardContent>
                                         <Typography align="right">
                                             {item.price} €
                                         </Typography>
@@ -82,33 +102,34 @@ const CategoryProductsList: FC = () => {
                                                 {item.name}
                                             </Typography>
                                         </div>
-                                    </CardContent>
+                                    </CustomCardContent>
                                 </CardActionArea>
                             </CustomCard>
                         </Grid>
                     ))}
-                </Grid>
+                </ProductsGrid>
             </>
         );
     };
 
-    return data.categoryProducts?.status === 'OK' ? (
+    return location.state ? (
         <Container>
             {location.state.categories
-                ? data?.categoryProducts?.categories.map(
-                      (category: Category_C) =>
-                          prodcutView(category, category.items)
+                ? location.state.categories.map((category: Category_C) =>
+                      prodcutView(category, category.items)
                   )
                 : prodcutView(
-                      location.state.items[0].parent_category,
+                      location.state.items[0].category,
                       location.state.items
                   )}
         </Container>
     ) : (
-        <h2>
-            <CircularProgress color="secondary" />
-            Cargando
-        </h2>
+        <ProgressGrid container justify="center" alignContent="center">
+            <Typography align="center" variant="h4">
+                <CircularProgress color="secondary" />
+                Cargando...
+            </Typography>
+        </ProgressGrid>
     );
 };
 

@@ -41,6 +41,10 @@ const Container = styled.div({
     padding: '25px 50px',
 });
 
+const ProgressGrid = styled(Grid)({
+    height: '80vh',
+});
+
 const MarketList: FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
@@ -71,9 +75,16 @@ const MarketList: FC = () => {
             <Grid container spacing={3}>
                 {data.markets?.services.map((services: MarketServiceModel) =>
                     services.markets.map((market: MarketModel) => (
-                        <CustomGrid container item md={2} sm={6} xs={12}>
+                        <CustomGrid
+                            key={market.id}
+                            container
+                            item
+                            lg={2}
+                            md={3}
+                            sm={6}
+                            xs={12}
+                        >
                             <CustomCard
-                                key={market.id}
                                 onClick={event => {
                                     showMarketCategories(event, market);
                                 }}
@@ -96,10 +107,12 @@ const MarketList: FC = () => {
             </Grid>
         </Container>
     ) : (
-        <h2>
-            <CircularProgress color="secondary" />
-            Cargando
-        </h2>
+        <ProgressGrid container justify="center" alignContent="center">
+            <Typography align="center" variant="h4">
+                <CircularProgress color="secondary" />
+                Cargando...
+            </Typography>
+        </ProgressGrid>
     );
 };
 

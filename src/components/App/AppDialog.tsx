@@ -11,7 +11,7 @@ import {
 import { appSelector, setData } from 'store/AppSlice';
 import { useHistory } from 'react-router-dom';
 
-const ErrorDialog: FC = () => {
+const AppDialog: FC = () => {
     const history = useHistory();
     const dispatch = useDispatch();
     const { data } = useSelector(appSelector);
@@ -23,17 +23,19 @@ const ErrorDialog: FC = () => {
                 onClose={() =>
                     dispatch(
                         setData({
-                            isDialogOpen: { show: false, errorMsg: '' },
+                            isDialogOpen: { show: false, dialogMsg: '' },
                         })
                     )
                 }
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <DialogTitle id="alert-dialog-title">LO SENTIMOS</DialogTitle>
+                <DialogTitle id="alert-dialog-title">
+                    {data.isDialogOpen.dialogTitle || 'LO SENTIMOS'}
+                </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        {data.isDialogOpen.errorMsg}
+                        {data.isDialogOpen.dialogMsg}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
@@ -42,7 +44,10 @@ const ErrorDialog: FC = () => {
                             history.push('./');
                             dispatch(
                                 setData({
-                                    isDialogOpen: { show: false, errorMsg: '' },
+                                    isDialogOpen: {
+                                        show: false,
+                                        dialogMsg: '',
+                                    },
                                 })
                             );
                         }}
@@ -56,4 +61,4 @@ const ErrorDialog: FC = () => {
     );
 };
 
-export default ErrorDialog;
+export default AppDialog;

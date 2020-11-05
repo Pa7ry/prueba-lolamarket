@@ -4,14 +4,14 @@ import Providers from 'components/Providers';
 import Router from 'components/Router';
 import AppBar from './AppBar';
 import SideBar from 'components/App/Sidebar';
-import ErrorDialog from 'components/App/ErrorDialog';
+import AppDialog from 'components/App/AppDialog';
 
 const App: FC = () => {
     return (
         <Providers>
             <AppBar />
             <SideBar />
-            <ErrorDialog />
+            <AppDialog />
             <Router />
         </Providers>
     );
