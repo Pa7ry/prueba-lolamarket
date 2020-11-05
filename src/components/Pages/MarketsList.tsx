@@ -4,14 +4,9 @@ import {
     CardContent,
     CircularProgress,
     Grid,
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
     Typography,
 } from '@material-ui/core';
-import { FavoriteBorder } from '@material-ui/icons';
-import { Market, Service } from 'models/main';
+import { MarketModel, MarketServiceModel } from 'models/main';
 import React, { FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -51,7 +46,7 @@ const MarketList: FC = () => {
     const history = useHistory();
     const { data } = useSelector(appSelector);
 
-    const showMarketCategories = (event: any, market: Market) => {
+    const showMarketCategories = (event: any, market: MarketModel) => {
         dispatch(
             setData({
                 marketSelected: market,
@@ -70,29 +65,12 @@ const MarketList: FC = () => {
 
     return data.markets?.status === 'OK' ? (
         <Container>
-            <Grid container>
-                <Grid item md={12}>
-                    <Typography variant="h4">Tú eliges:</Typography>
-                </Grid>
-                {data.markets?.services.map((services: Service) => (
-                    <Grid item md={6}>
-                        <Typography variant="h5">{services.title}</Typography>
-                        <List dense={true}>
-                            {services.features.map((feature: string) => (
-                                <ListItem>
-                                    <ListItemIcon>
-                                        <FavoriteBorder />
-                                    </ListItemIcon>
-                                    <ListItemText>{feature}</ListItemText>
-                                </ListItem>
-                            ))}
-                        </List>
-                    </Grid>
-                ))}
-            </Grid>
+            <Typography variant="h4" align="center" paragraph>
+                ¿Dónde quieres comprar?
+            </Typography>
             <Grid container spacing={3}>
-                {data.markets?.services.map((services: Service) =>
-                    services.markets.map((market: Market) => (
+                {data.markets?.services.map((services: MarketServiceModel) =>
+                    services.markets.map((market: MarketModel) => (
                         <CustomGrid container item md={2} sm={6} xs={12}>
                             <CustomCard
                                 key={market.id}

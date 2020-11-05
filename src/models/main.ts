@@ -1,31 +1,42 @@
-export interface SessionTokenOKResponse {
-    status: 'OK';
-    token: string;
+type SuccessResponse = 'OK';
+type ErrorResponse = 'Error';
+
+interface ApiSuccessStatus {
+    status: SuccessResponse;
 }
 
-export interface PostalCodeOKResponse {
-    status: 'OK';
-    services: Service[];
+interface ApiErrorStatus {
+    status: ErrorResponse;
+}
+
+export type TokenSuccessResponse = ApiSuccessStatus & {
+    // SessionTokenOKResponse
+    token: string;
+};
+
+export type CityMarketsModel = ApiSuccessStatus & {
+    // CityMarketsModel
+    services: MarketServiceModel[];
     extra_services: any[];
     home_needs: any[];
     subscriptions: any[];
     ready_to_eat: any[];
     city: string;
-}
+};
 
-export interface Service {
+export interface MarketServiceModel {
     type: string;
     is_new: boolean;
     title: string;
     delivery: string;
     description: string;
     features: string[];
-    markets: Market[];
+    markets: MarketModel[];
     icons?: string[];
     color: string;
 }
 
-export interface Market {
+interface BaseMarket {
     id: number;
     shortcut: string;
     name: string;
@@ -42,76 +53,65 @@ export interface Market {
     market_type: string;
     service_type: string;
     is_tasty: boolean;
-    companies: Company[];
     default_shop: number;
     equivalent_company_id?: number;
 }
 
-export interface Company {
-    id: number;
-    shortcut: string;
-    name: string;
-    picture: string;
-    icon: string;
-    description: string;
-    color: string;
-    special: boolean;
-    logotype: string;
-    logotype_background: string;
-    superAppLogotype: string;
-    highlighted_icon?: string;
-    highlighted_text?: string;
-    market_type: string;
-    service_type: string;
-    is_tasty: boolean;
-    default_shop: number;
+interface Company extends BaseMarket {
+    // Company
     next_timeslot_label: string;
     next_timeslot: string;
-    equivalent_company_id?: number;
 }
 
-export interface CategoriesOKResponse {
-    status: 'OK';
-    categories: Category2[];
-}
+export type MarketModel = BaseMarket & {
+    // Market
+    companies: Company[];
+};
 
-export interface Category2 {
+interface CategoryBaseModel {
     id: number;
     shortcut: string;
     name: string;
     picture: string;
     icon: string;
     is_final: boolean;
-    categories: Category[];
 }
 
-export interface Category {
-    id: number;
-    shortcut: string;
-    name: string;
-    picture: string;
-    icon: string;
-    is_final: boolean;
+interface Category extends CategoryBaseModel {
+    // Category
     categories?: any[];
 }
 
-export interface KOResponse {
-    status: 'Error';
-    error: Error;
+interface Category_B extends CategoryBaseModel {
+    // Category2
+    categories: Category[];
 }
 
-export interface Error {
+export interface Category_C extends CategoryBaseModel {
+    categories: any[];
+    items: Item2[];
+}
+
+interface CategoriesSuccessResponse extends ApiSuccessStatus {
+    // CategoriesOKResponse
+    categories: Category_B[];
+}
+
+interface Error {
     code: string;
     message: string;
 }
+
+export type ApiErrorResponse = ApiErrorStatus & {
+    error: Error;
+};
 
 export interface ErrorDialogProps {
     show: boolean;
     errorMsg: string;
 }
 
-export interface Products {
-    status: 'OK';
+export interface Products extends ApiSuccessStatus {
     items: Item[];
 }
 
@@ -123,7 +123,6 @@ export interface Item {
     picture: string;
     measure: string;
     unit_of_measure: string;
-    brand: string;
     nutritional_info: string;
     package_info: string;
     type: string;
@@ -137,58 +136,19 @@ export interface Item {
     unit_of_price_per: string;
     price: string;
     price_per: string;
-    currency: string;
     company_id: number;
     max_price: string;
+    currency: string;
     max_quantity?: number;
+    brand: string;
 }
+
+export type Item2 = Omit<Item, 'max_quantity' | 'brand'>;
 
 export interface CategoryProductsResponse {
     status: string;
     meta: Meta;
-    categories: Category3[];
-}
-
-export interface Category3 {
-    id: string;
-    shortcut: string;
-    name: string;
-    picture: string;
-    icon: string;
-    is_final: boolean;
-    categories: any[];
-    items: Item2[];
-}
-
-export interface Item2 {
-    uuid: string;
-    shortcut: string;
-    name: string;
-    picture: string;
-    measure: string;
-    unit_of_measure: string;
-    nutritional_info: string;
-    package_info: string;
-    type: string;
-    friendly_url: string;
-    pictures: string[];
-    tags: Tag[][];
-    category_id: number;
-    category: Category;
-    parent_category_id: number;
-    parent_category: Category;
-    unit_of_price_per: string;
-    price: string;
-    price_per: string;
-    currency: string;
-    company_id: number;
-    max_price: string;
-    description?: string;
-}
-
-interface Tag {
-    id: number;
-    name: string;
+    categories: Category_C[];
 }
 
 interface Meta {
@@ -200,15 +160,15 @@ export interface App {
     postalCode?: number;
     token?: string;
     isSideBarOpen: boolean;
-    shops: PostalCodeOKResponse | undefined;
+    shops: CityMarketsModel | undefined;
     isDialogOpen: ErrorDialogProps;
     marketCategories: CategoriesResponse | undefined;
-    marketSelected: Market | undefined;
+    marketSelected: MarketModel | undefined;
     categoryProducts: CategoryProductsResponse | undefined;
     products: Products | undefined;
 }
 
-export type PostalCodeResponse = PostalCodeOKResponse | KOResponse;
-export type CategoriesResponse = CategoriesOKResponse | KOResponse;
-export type SessionTokenResponse = SessionTokenOKResponse | KOResponse;
-export type ProductsResponse = Products | KOResponse;
+export type PostalCodeResponse = CityMarketsModel | ApiErrorResponse;
+export type CategoriesResponse = CategoriesSuccessResponse | ApiErrorResponse;
+export type SessionTokenResponse = TokenSuccessResponse | ApiErrorResponse;
+export type ProductsResponse = Products | ApiErrorResponse;

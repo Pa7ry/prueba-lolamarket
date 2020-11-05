@@ -64,12 +64,14 @@ const SideBar: FC = () => {
         if (subcategory_name) {
             dispatch(getProducts(subcategory_id));
             history.push(
-                `/tienda/${data.marketSelected?.shortcut}/${category_name}/${subcategory_name}`
+                `/tienda/${data.marketSelected?.shortcut}/${category_name}/${subcategory_name}`,
+                data.products
             );
         } else {
             dispatch(getCategoryProducts(category__));
             history.push(
-                `/tienda/${data.marketSelected?.shortcut}/${category_name}`
+                `/tienda/${data.marketSelected?.shortcut}/${category_name}`,
+                data.categoryProducts
             );
         }
 
@@ -80,167 +82,182 @@ const SideBar: FC = () => {
         );
     };
 
+    const setHeaderFontColor = () => {
+        const res =
+            data.marketSelected?.color !== '255,255,255'
+                ? { color: 'white' }
+                : { color: 'black' };
+        return res;
+    };
+
     return (
         <>
-            <Drawer
-                open={data.isSideBarOpen}
-                style={{ width: '21.7%' }}
-                onClose={() =>
-                    dispatch(
-                        setData({
-                            isSideBarOpen: false,
-                        })
-                    )
-                }
-            >
-                <AppBar
-                    position="sticky"
-                    style={{
-                        backgroundColor: `rgb(${data.marketSelected?.color})`,
-                    }}
+            {data.marketCategories?.status === 'OK' && (
+                <Drawer
+                    open={data.isSideBarOpen}
+                    style={{ width: '21.7%' }}
+                    onClose={() =>
+                        dispatch(
+                            setData({
+                                isSideBarOpen: false,
+                            })
+                        )
+                    }
                 >
-                    <Toolbar>
-                        <Avatar
-                            style={{ width: '24px', height: '24px' }}
-                            alt={data.marketSelected?.name}
-                            src={data.marketSelected?.icon}
-                        />
-                        <Content>
-                            <CustomTypography variant="h6">
-                                {data.marketSelected?.name}
-                            </CustomTypography>
-                            <CustomTypography variant="caption">
-                                Comprando en {data.postalCode}
-                            </CustomTypography>
-                        </Content>
-                        <Button
-                            style={{ color: 'white' }}
-                            onClick={() => {
-                                dispatch(
-                                    setData({
-                                        isSideBarOpen: false,
-                                    })
-                                );
-                                history.push(routes.marketList);
-                            }}
-                        >
-                            Cambiar
-                        </Button>
-                    </Toolbar>
-                </AppBar>
-                <div role="presentation">
-                    <List>
-                        {data.marketCategories?.categories.map(category => (
-                            <>
-                                <CustomListItem
-                                    disableRipple
-                                    button
-                                    key={category.id}
-                                    onClick={() => {
-                                        setOpen(!open);
-                                        setCategory(
-                                            category__ === category.id
-                                                ? 0
-                                                : category.id
-                                        );
-                                    }}
-                                >
-                                    <Avatar
-                                        style={{
-                                            width: '24px',
-                                            height: '24px',
+                    <AppBar
+                        position="sticky"
+                        style={{
+                            backgroundColor: `rgb(${data.marketSelected?.color})`,
+                        }}
+                    >
+                        <Toolbar style={setHeaderFontColor()}>
+                            <Avatar
+                                style={{ width: '24px', height: '24px' }}
+                                alt={data.marketSelected?.name}
+                                src={data.marketSelected?.icon}
+                            />
+                            <Content>
+                                <CustomTypography variant="h6">
+                                    {data.marketSelected?.name}
+                                </CustomTypography>
+                                <CustomTypography variant="caption">
+                                    Comprando en {data.postalCode}
+                                </CustomTypography>
+                            </Content>
+                            <Button
+                                variant="contained"
+                                onClick={() => {
+                                    dispatch(
+                                        setData({
+                                            isSideBarOpen: false,
+                                        })
+                                    );
+                                    history.push(routes.marketList);
+                                }}
+                            >
+                                Cambiar
+                            </Button>
+                        </Toolbar>
+                    </AppBar>
+                    <div role="presentation">
+                        <List>
+                            {data.marketCategories?.categories.map(category => (
+                                <>
+                                    <CustomListItem
+                                        disableRipple
+                                        button
+                                        key={category.id}
+                                        onClick={() => {
+                                            setOpen(!open);
+                                            setCategory(
+                                                category__ === category.id
+                                                    ? 0
+                                                    : category.id
+                                            );
                                         }}
-                                        alt={category.name}
-                                        src={category.icon}
-                                    />
-                                    <ListItemText
-                                        primary={category.name}
-                                        style={{ padding: '0 7px' }}
-                                    />
-                                    {category.id === category__ && (
-                                        <ExpandLess color="action" />
-                                    )}
-                                </CustomListItem>
-                                <Divider variant="middle" />
-                                <Collapse
-                                    in={category.id === category__}
-                                    timeout="auto"
-                                    unmountOnExit
-                                >
-                                    <CustomList disablePadding>
-                                        <ListItem
-                                            button
-                                            onClick={() => {
-                                                showProducts(
-                                                    category.shortcut,
-                                                    '',
-                                                    category.id
-                                                );
-                                                setSubcategory(category.id);
+                                    >
+                                        <Avatar
+                                            style={{
+                                                width: '24px',
+                                                height: '24px',
                                             }}
-                                        >
-                                            <ListItemText
-                                                primary={'Ver toda la sección'}
-                                            />
-                                            {subcategory__ === category.id && (
-                                                <Check color="action" />
-                                            )}
-                                        </ListItem>
-                                        <Divider variant="middle" />
-                                        {category.categories.map(
-                                            subcategory => (
-                                                <>
-                                                    <ListItem
-                                                        button
-                                                        key={subcategory.id}
-                                                        onClick={() => {
-                                                            showProducts(
-                                                                category.shortcut,
-                                                                subcategory.shortcut,
-                                                                subcategory.id
-                                                            );
-                                                            setSubcategory(
-                                                                subcategory.id
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Avatar
-                                                            style={{
-                                                                width: '24px',
-                                                                height: '24px',
-                                                            }}
-                                                            alt={
-                                                                subcategory.name
-                                                            }
-                                                            src={
-                                                                subcategory.icon
-                                                            }
-                                                        />
-                                                        <ListItemText
-                                                            primary={
-                                                                subcategory.name
-                                                            }
-                                                            style={{
-                                                                padding:
-                                                                    '0 7px',
-                                                            }}
-                                                        />
-                                                        {subcategory.id ===
-                                                            subcategory__ && (
-                                                            <Check color="action" />
-                                                        )}
-                                                    </ListItem>
-                                                    <Divider variant="middle" />
-                                                </>
-                                            )
+                                            alt={category.name}
+                                            src={category.icon}
+                                        />
+                                        <ListItemText
+                                            primary={category.name}
+                                            style={{ padding: '0 7px' }}
+                                        />
+                                        {category.id === category__ && (
+                                            <ExpandLess color="action" />
                                         )}
-                                    </CustomList>
-                                </Collapse>
-                            </>
-                        ))}
-                    </List>
-                </div>
-            </Drawer>
+                                    </CustomListItem>
+                                    <Divider variant="middle" />
+                                    <Collapse
+                                        in={category.id === category__}
+                                        timeout="auto"
+                                        unmountOnExit
+                                    >
+                                        <CustomList disablePadding>
+                                            <ListItem
+                                                button
+                                                onClick={() => {
+                                                    showProducts(
+                                                        category.shortcut,
+                                                        '',
+                                                        category.id
+                                                    );
+                                                    setSubcategory(category.id);
+                                                }}
+                                            >
+                                                <ListItemText
+                                                    primary={
+                                                        'Ver toda la sección'
+                                                    }
+                                                />
+                                                {subcategory__ ===
+                                                    category.id && (
+                                                    <Check color="action" />
+                                                )}
+                                            </ListItem>
+                                            <Divider variant="middle" />
+                                            {category.categories.map(
+                                                subcategory => (
+                                                    <>
+                                                        <ListItem
+                                                            button
+                                                            key={subcategory.id}
+                                                            onClick={() => {
+                                                                showProducts(
+                                                                    category.shortcut,
+                                                                    subcategory.shortcut,
+                                                                    subcategory.id
+                                                                );
+                                                                setSubcategory(
+                                                                    subcategory.id
+                                                                );
+                                                            }}
+                                                        >
+                                                            <Avatar
+                                                                style={{
+                                                                    width:
+                                                                        '24px',
+                                                                    height:
+                                                                        '24px',
+                                                                }}
+                                                                alt={
+                                                                    subcategory.name
+                                                                }
+                                                                src={
+                                                                    subcategory.icon
+                                                                }
+                                                            />
+                                                            <ListItemText
+                                                                primary={
+                                                                    subcategory.name
+                                                                }
+                                                                style={{
+                                                                    padding:
+                                                                        '0 7px',
+                                                                }}
+                                                            />
+                                                            {subcategory.id ===
+                                                                subcategory__ && (
+                                                                <Check color="action" />
+                                                            )}
+                                                        </ListItem>
+                                                        <Divider variant="middle" />
+                                                    </>
+                                                )
+                                            )}
+                                        </CustomList>
+                                    </Collapse>
+                                </>
+                            ))}
+                        </List>
+                    </div>
+                </Drawer>
+            )}
         </>
     );
 };

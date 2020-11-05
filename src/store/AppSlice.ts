@@ -2,11 +2,10 @@ import { fetcher } from 'config/fetcher';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppThunk } from './';
 import {
-    CategoriesOKResponse,
     CategoriesResponse,
     ErrorDialogProps,
-    Market,
-    PostalCodeOKResponse,
+    MarketModel,
+    CityMarketsModel,
     PostalCodeResponse,
     Products,
     CategoryProductsResponse,
@@ -18,10 +17,10 @@ interface AppData {
     postalCode?: number;
     token?: string;
     isSideBarOpen: boolean;
-    markets?: PostalCodeOKResponse;
+    markets?: CityMarketsModel;
     isDialogOpen: ErrorDialogProps;
-    marketCategories?: CategoriesOKResponse;
-    marketSelected?: Market;
+    marketCategories?: CategoriesResponse;
+    marketSelected?: MarketModel;
     products?: Products;
     categoryProducts?: CategoryProductsResponse;
 }

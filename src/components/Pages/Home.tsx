@@ -39,12 +39,12 @@ const Home: FC = () => {
     const history = useHistory();
     const dispatch = useDispatch();
 
-    const [zip, setZip] = useState<string>('');
+    const [postalCode, setPostalCode] = useState<string>('');
 
-    const getMarketsByZip = () => {
+    const getMarketsAction = () => {
         dispatch(
             setData({
-                postalCode: zip,
+                postalCode: postalCode,
             })
         );
         dispatch(getMarkets());
@@ -75,14 +75,14 @@ const Home: FC = () => {
                         label="Código postal"
                         onChange={(
                             event: React.ChangeEvent<HTMLInputElement>
-                        ) => setZip(event.target.value)}
+                        ) => setPostalCode(event.target.value)}
                     />
 
                     <CustomButton
                         variant="contained"
                         color="secondary"
-                        disabled={zip.length !== 5}
-                        onClick={getMarketsByZip}
+                        disabled={postalCode.length !== 5}
+                        onClick={getMarketsAction}
                     >
                         ¡HACER LA COMPRA!
                     </CustomButton>

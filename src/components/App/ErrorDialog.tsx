@@ -9,8 +9,10 @@ import {
     DialogTitle,
 } from '@material-ui/core';
 import { appSelector, setData } from 'store/AppSlice';
+import { useHistory } from 'react-router-dom';
 
 const ErrorDialog: FC = () => {
+    const history = useHistory();
     const dispatch = useDispatch();
     const { data } = useSelector(appSelector);
 
@@ -36,13 +38,14 @@ const ErrorDialog: FC = () => {
                 </DialogContent>
                 <DialogActions>
                     <Button
-                        onClick={() =>
+                        onClick={() => {
+                            history.push('./');
                             dispatch(
                                 setData({
                                     isDialogOpen: { show: false, errorMsg: '' },
                                 })
-                            )
-                        }
+                            );
+                        }}
                         color="primary"
                     >
                         Aceptar

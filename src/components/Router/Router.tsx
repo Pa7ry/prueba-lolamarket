@@ -1,6 +1,6 @@
 import Home from 'components/Pages/Home';
 import MarketList from 'components/Pages/MarketsList';
-import ProductList from 'components/Pages/ProductsList';
+// import ProductList from 'components/Pages/ProductsList';
 import CategoryProductsList from 'components/Pages/CategoryProductsList';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
@@ -19,7 +19,7 @@ const Router = (): JSX.Element => (
             <MarketList />
         </Route>
         <Route exact path={routes.productList}>
-            <ProductList />
+            <CategoryProductsList />
         </Route>
         <Route exact path={routes.categoryProductList}>
             <CategoryProductsList />

@@ -22,7 +22,6 @@ const AppBar: FC = () => {
     const { data } = useSelector(appSelector);
 
     const changePostalCode = (value: string) => {
-        console.log(data.postalCode);
         dispatch(setData({ postalCode: value }));
         dispatch(getMarkets());
     };
@@ -78,7 +77,7 @@ const AppBar: FC = () => {
                             id="edit-postalCode"
                             defaultValue={data.postalCode}
                             required
-                            inputProps={{ minlength: 5 }}
+                            inputProps={{ minLength: 5 }}
                             onChange={event =>
                                 event.target.checkValidity() &&
                                 changePostalCode(event.target.value)
