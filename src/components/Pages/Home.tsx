@@ -11,8 +11,6 @@ import React, { FC, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { getMarkets, getToken, setData } from 'store/AppSlice';
-import ShopDesktop from './../../assets/images/shop-desktop.png';
-import ShopMobile from './../../assets/images/shop-mobile.png';
 
 const InputButton = styled.div({
     margin: 15,
@@ -54,7 +52,6 @@ const Home: FC = () => {
     };
 
     useEffect(() => {
-        console.log(ShopDesktop, ShopMobile);
         dispatch(getToken());
     }, [dispatch]);
 
@@ -100,8 +97,8 @@ const Home: FC = () => {
                     className="Comprar"
                     src={
                         window.window.screen.width < 450
-                            ? ShopMobile
-                            : ShopDesktop
+                            ? 'prueba-lolamarket/shop-mobile.png'
+                            : 'prueba-lolamarket/shop-desktop.png'
                     }
                     title="shopping"
                 />

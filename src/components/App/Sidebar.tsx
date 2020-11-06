@@ -75,15 +75,13 @@ const SideBar: FC = () => {
         subcategory_id: number
     ) => {
         if (subcategory_name) {
-            console.log(dispatch(getProducts(subcategory_id)));
-            Promise.resolve(dispatch(getProducts(subcategory_id))).then(
-                (res: any) => {
-                    console.log(res);
-                    history.push(
-                        `/tienda/${data.marketSelected?.shortcut}/${category_name}/${subcategory_name}`,
-                        res.payload.products
-                    );
-                }
+            Promise.resolve(
+                dispatch(getProducts(subcategory_id))
+            ).then((res: any) =>
+                history.push(
+                    `/tienda/${data.marketSelected?.shortcut}/${category_name}/${subcategory_name}`,
+                    res.payload.products
+                )
             );
         } else {
             Promise.resolve(
