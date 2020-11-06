@@ -11,6 +11,8 @@ import React, { FC, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { getMarkets, getToken, setData } from 'store/AppSlice';
+import ShopDesktop from './../../assets/shop-desktop.png';
+import ShopMobile from './../../assets/shop-mobile.png';
 
 const InputButton = styled.div({
     margin: 15,
@@ -97,8 +99,8 @@ const Home: FC = () => {
                     className="Comprar"
                     src={
                         window.window.screen.width < 450
-                            ? '/shop-mobile.png'
-                            : '/shop-desktop.png'
+                            ? ShopMobile
+                            : ShopDesktop
                     }
                     title="shopping"
                 />
