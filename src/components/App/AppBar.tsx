@@ -3,6 +3,7 @@ import {
     AppBar as MuiAppBar,
     Avatar,
     Button,
+    FormControl,
     Input,
     InputLabel,
     Toolbar,
@@ -30,6 +31,8 @@ const AppBar: FC = () => {
         dispatch(setData({ postalCode: value }));
         dispatch(getMarkets());
     };
+
+    const validatePostalCode = (value: string) => /^[0-9]{5}$/.test(value);
 
     const setInputColor = () => {
         const res =
@@ -68,7 +71,7 @@ const AppBar: FC = () => {
                     )}
                 </div>
                 {data.postalCode && (
-                    <div>
+                    <FormControl>
                         <InputLabel
                             style={setInputColor()}
                             htmlFor="edit-postalCode"
@@ -81,13 +84,12 @@ const AppBar: FC = () => {
                             id="edit-postalCode"
                             defaultValue={data.postalCode}
                             required
-                            inputProps={{ minLength: 5, maxLength: 5 }}
                             onChange={event =>
-                                event.target.checkValidity() &&
+                                validatePostalCode(event.target.value) &&
                                 changePostalCode(event.target.value)
                             }
                         />
-                    </div>
+                    </FormControl>
                 )}
             </CustomToolbar>
         </MuiAppBar>

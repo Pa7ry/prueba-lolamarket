@@ -11,6 +11,8 @@ import React, { FC, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { getMarkets, getToken, setData } from 'store/AppSlice';
+import ShopDesktop from './../../assets/images/shop-desktop.png';
+import ShopMobile from './../../assets/images/shop-mobile.png';
 
 const InputButton = styled.div({
     margin: 15,
@@ -52,6 +54,7 @@ const Home: FC = () => {
     };
 
     useEffect(() => {
+        console.log(ShopDesktop, ShopMobile);
         dispatch(getToken());
     }, [dispatch]);
 
@@ -66,15 +69,15 @@ const Home: FC = () => {
                 sm={6}
                 xs={12}
             >
-                <Typography variant="h2">¡Quédate en casa!</Typography>
-                <Typography variant="h2">Nosotros te</Typography>
-                <Typography variant="h2">hacemos la compra</Typography>
+                <Typography variant="h2" align="center">
+                    ¡Quédate en casa! <br /> Nosotros te <br /> hacemos la
+                    compra
+                </Typography>
                 <InputButton>
                     <TextField
                         id="outlined-basic"
                         label="Código postal"
                         required
-                        inputProps={{ minLength: 5, maxLength: 5 }}
                         onChange={(
                             event: React.ChangeEvent<HTMLInputElement>
                         ) => setPostalCode(event.target.value)}
@@ -83,7 +86,9 @@ const Home: FC = () => {
                     <CustomButton
                         variant="contained"
                         color="secondary"
-                        disabled={postalCode.length !== 5}
+                        disabled={
+                            !postalCode.length || !/^[0-9]{5}$/.test(postalCode)
+                        }
                         onClick={getMarketsAction}
                     >
                         ¡HACER LA COMPRA!
@@ -93,10 +98,10 @@ const Home: FC = () => {
             <Grid container item sm={6} xs={12}>
                 <CustomCardMedia
                     className="Comprar"
-                    image={
+                    src={
                         window.window.screen.width < 450
-                            ? '/shop-mobile.png'
-                            : '/shop-desktop.png'
+                            ? ShopMobile
+                            : ShopDesktop
                     }
                     title="shopping"
                 />

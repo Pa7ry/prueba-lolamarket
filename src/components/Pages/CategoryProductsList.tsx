@@ -35,6 +35,7 @@ const ProductsGrid = styled(Grid)({
 const CustomCard = styled(Card)({
     width: '100%',
     padding: 15,
+    cursor: 'pointer',
 });
 
 const CustomCardMedia = styled(CardMedia)({

@@ -26,6 +26,7 @@ const CustomCard = styled(Card)({
     flexDirection: 'column',
     justifyContent: 'flex-end',
     alignItems: 'center',
+    cursor: 'pointer',
 });
 
 const CustomGrid = styled(Grid)({
@@ -39,6 +40,11 @@ const CustomGrid = styled(Grid)({
 
 const Container = styled.div({
     padding: '25px 50px',
+});
+
+const CustomCardContent = styled(CardContent)({
+    width: '100%',
+    padding: '0 16px 16px',
 });
 
 const ProgressGrid = styled(Grid)({
@@ -95,11 +101,15 @@ const MarketList: FC = () => {
                                         src={market.logotype}
                                     />
                                 </ImgContainer>
-                                <CardContent>
-                                    <Typography color="textSecondary">
+                                <CustomCardContent>
+                                    <Typography
+                                        color="textSecondary"
+                                        align="right"
+                                        variant="subtitle2"
+                                    >
                                         {services.delivery}
                                     </Typography>
-                                </CardContent>
+                                </CustomCardContent>
                             </CustomCard>
                         </CustomGrid>
                     ))
