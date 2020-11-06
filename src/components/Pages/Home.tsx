@@ -54,6 +54,7 @@ const Home: FC = () => {
     };
 
     useEffect(() => {
+        console.log(ShopDesktop);
         dispatch(getToken());
     }, [dispatch]);
 
@@ -97,7 +98,7 @@ const Home: FC = () => {
             <Grid container item sm={6} xs={12}>
                 <CustomCardMedia
                     className="Comprar"
-                    src={
+                    image={
                         window.window.screen.width < 450
                             ? ShopMobile
                             : ShopDesktop
