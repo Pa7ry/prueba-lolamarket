@@ -97,8 +97,8 @@ const Home: FC = () => {
                     className="Comprar"
                     src={
                         window.window.screen.width < 450
-                            ? 'prueba-lolamarket/shop-mobile.png'
-                            : 'prueba-lolamarket/shop-desktop.png'
+                            ? '/shop-mobile.png'
+                            : '/shop-desktop.png'
                     }
                     title="shopping"
                 />
